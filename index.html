@@ -27,8 +27,8 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lock{width:52px;height:52px;overflow:visible}
 .lock .st{stroke:var(--ink);transition:stroke .7s var(--ease)}
 .lockwrap.shut .lock .st{stroke:var(--gold)}
-.shackle{transform-box:fill-box;transform-origin:100% 100%;transition:transform .7s var(--ease)}
-.lockwrap:not(.shut) .shackle{transform:translateY(-5px) rotate(-14deg)}
+.shackle{transform-box:fill-box;transform-origin:0 100%;transition:transform .55s cubic-bezier(.34,1.7,.5,1)}
+.lockwrap:not(.shut) .shackle{transform:rotate(-34deg);transition:transform .6s var(--ease)}
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
 h1.sent{color:var(--gold)}
@@ -133,6 +133,7 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 .stack>.card>.drop{flex:1}
 h1.still #tw,h1.still .tk,h1.still .tk svg{animation:none}
 h1.still .tk svg{stroke-dashoffset:0}
+.nw{white-space:nowrap}
 /* keyboard focus (all sizes) */
 button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .tabs button:focus-visible{outline-offset:-3px}
@@ -179,7 +180,7 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
 <div class="grain"></div>
 <main>
   <div class="hero">
-    <div class="lockwrap" id="lw">
+    <div class="lockwrap shut" id="lw">
       <svg class="lock" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path class="shackle st" d="M23 29v-6a9 9 0 0 1 18 0v6" stroke-width="2"/>
         <rect class="st" x="15" y="29" width="34" height="23" rx="6" stroke-width="2"/>
@@ -200,7 +201,7 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
   <section class="card" id="lockView">
     <div class="drop pick" id="drop1">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-      <span>Add files or a folder<span class="dz-hint"> — or drop them here</span></span>
+      <span><span class="nw">Add files or an entire folder</span><span class="dz-hint"> — or drop them here</span></span>
       <div class="btns">
         <button class="btn sec" id="pickFiles" type="button">Files</button>
         <button class="btn sec" id="pickDir" type="button">Folder</button>
@@ -357,7 +358,7 @@ const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',IC
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
-  lw.classList.toggle('shut',i===0&&!!lockedBlob);syncTitle()});
+  lw.classList.toggle('shut',i===0);syncTitle()});
 let seen=false;
 function syncTitle(){
   if($('opened').hidden)seen=false;
@@ -499,7 +500,7 @@ $('copy').onclick=async()=>{
   if(!ok){const r=document.createRange();r.selectNodeContents($('key'));const s=getSelection();s.removeAllRanges();s.addRange(r)}
   $('copyTxt').textContent=ok?'Copied':'Press and hold the key to copy';
   setTimeout(()=>$('copyTxt').textContent='Copy key',ok?2200:3500)};
-$('again').onclick=()=>{lockedBlob=null;keyText='';staged=[];$('key').textContent='';$('result').hidden=true;renderStaged();lw.classList.remove('shut');try{navigator.clipboard.writeText('')}catch(e){}};
+$('again').onclick=()=>{lockedBlob=null;keyText='';staged=[];$('key').textContent='';$('result').hidden=true;renderStaged();lw.classList.add('shut');try{navigator.clipboard.writeText('')}catch(e){}};
 
 // UNLOCK
 function pick2(f){f2file=f;$('drop2').classList.add('has');$('dropTxt2').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub2').textContent=fmt(f.size);$('err2').hidden=true;chk();
