@@ -33,7 +33,6 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 @keyframes pop{40%{transform:scale(1.07)}}
 h1 .tk{display:inline-grid;place-items:center;width:24px;height:24px;margin-left:12px;border-radius:50%;border:1px solid var(--gold);background:rgba(200,173,120,.1);vertical-align:.1em;animation:pop .7s var(--ease)}
 h1 .tk svg{width:12px;height:12px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
-h1+.tag{margin:-6px 0 0;font:italic 16px var(--serif);letter-spacing:.03em;color:var(--dim)}
 h1{margin:0;font:500 31px/1 var(--serif);letter-spacing:.02em;color:var(--ink)}
 .tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:12px 0;cursor:pointer;transition:color .35s}
@@ -127,7 +126,6 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
       </svg>
     </div>
     <h1><span id="tw">Send</span> Safe<span class="tk" id="tk" hidden><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span></h1>
-    <p class="tag">Send safe. Sent safely.</p>
   </div>
 
   <div class="tabs" id="tabs" data-t="0" role="tablist">
