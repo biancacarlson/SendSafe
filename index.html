@@ -169,7 +169,7 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
           <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save file</button>
           <button class="btn sec" id="share" hidden><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4-4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>Share</button>
         </div>
-        <div class="label"><span>Your key</span></div>
+        <div class="label"><span>Your key</span><span id="kid"></span></div>
         <div class="key" id="key"></div>
         <button class="btn pri" id="copy"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span id="copyTxt">Copy key</span></button>
         <button class="btn sec" id="again">Done</button>
@@ -180,7 +180,6 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 
   <!-- UNLOCK -->
   <section class="card" id="openView" hidden>
-    <div class="note" id="vnote"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>Only open files from someone you’ve verified.</div>
     <label class="drop" id="drop2">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
       <span id="dropTxt2">Choose the locked file</span><small id="dropSub2"></small>
@@ -207,7 +206,9 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 const MAGIC=new TextEncoder().encode('SSAFE4'),ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',MAX=50*1024*1024,WARN=20*1024*1024;
 function newKey(){const r=crypto.getRandomValues(new Uint8Array(25));let s='';for(const x of r)s+=ALPHA[x&31];return s}
 function dstr(t){return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}
-function fname(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return 'Sent Safe '+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.dat'}
+function fname(t,id){const d=new Date(t),p=n=>String(n).padStart(2,'0');return 'Sent Safe '+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+(id?' '+id:'')+'.dat'}
+function fidOf(b,o){return[b[o],b[o+1]].map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase()}
+function fail(m,id){const e=new Error(m);e.id=id;return e}
 function showKey(s){return s.match(/.{1,5}/g).join('-')}
 function normKey(s){return String(s).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/[1I]/g,'L')}
 async function aes(k,use){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(k));return crypto.subtle.importKey('raw',h,'AES-GCM',false,[use])}
@@ -243,20 +244,23 @@ async function seal(files,expiry){
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'encrypt'),plain));
   const out=new Uint8Array(MAGIC.length+12+ct.length);out.set(MAGIC);out.set(iv,MAGIC.length);out.set(ct,MAGIC.length+12);
   plain.fill(0);
-  return{bytes:out,key:k};
+  return{bytes:out,key:k,id:fidOf(iv,0)};
 }
 async function unseal(file,keyStr){
-  const k=normKey(keyStr);if(k.length!==25)throw new Error('bad');
+  const k=normKey(keyStr);
   const d=new Uint8Array(await file.arrayBuffer());
-  if(d.length<MAGIC.length+12+16)throw new Error('bad');
-  for(let i=0;i<MAGIC.length;i++)if(d[i]!==MAGIC[i])throw new Error('bad');
+  if(d.length<MAGIC.length)throw fail('notsend');
+  for(let i=0;i<MAGIC.length;i++)if(d[i]!==MAGIC[i])throw fail('notsend');
+  if(d.length<MAGIC.length+12+16)throw fail('short');
+  const id=fidOf(d,MAGIC.length);
+  if(k.length!==25)throw fail('badkey',id);
   const iv=d.slice(MAGIC.length,MAGIC.length+12),ct=d.slice(MAGIC.length+12);
-  let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'decrypt'),ct))}catch(e){throw new Error('bad')}
+  let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'decrypt'),ct))}catch(e){throw fail('bad',id)}
   const dv=new DataView(plain.buffer,plain.byteOffset,plain.length),dec=new TextDecoder();
   const exp=dv.getFloat64(0);if(exp&&Date.now()>exp)throw new Error('expired');
   const sent=dv.getFloat64(8);let o=16;const n=dv.getUint32(o);o+=4;if(n>5000)throw new Error('bad');const out=[];
   for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;if(o+ml+4>plain.length)throw new Error('bad');const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;if(o+bl>plain.length)throw new Error('bad');const name=cleanPath(meta.n),bytes=plain.slice(o,o+bl);out.push({name,risky:isRisky(name)||(extOf(name.split('/').pop())==='zip'&&!!zipBad(bytes)),type:meta.t||'application/octet-stream',bytes});o+=bl}
-  return{files:out,sent,exp};
+  return{files:out,sent,exp,id};
 }
 const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
 function crc32(b){let c=~0;for(let i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return ~c>>>0}
@@ -395,7 +399,7 @@ $('lock').onclick=async()=>{
   try{
     const exp=Date.now()+days*864e5;
     const[r]=await Promise.all([seal(staged,exp),sleep(900)]);
-    lockedName=fname(Date.now());$('meta1').textContent=lockedName+'\nExpires '+dstr(exp);lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
+    lockedName=fname(Date.now(),r.id);$('kid').textContent='File '+r.id;$('meta1').textContent=lockedName+'\nExpires '+dstr(exp);lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
     const k=$('key');k.textContent='';
     keyText.split('-').forEach((g,i)=>{const b=document.createElement('b');b.textContent=g;b.style.animationDelay=(i*70)+'ms';k.appendChild(b)});
     lw.classList.remove('busy');lw.classList.add('shut','pop');setTimeout(()=>lw.classList.remove('pop'),700);
@@ -427,14 +431,15 @@ $('copy').onclick=async()=>{
 $('again').onclick=()=>{lockedBlob=null;keyText='';staged=[];$('key').textContent='';$('result').hidden=true;renderStaged();lw.classList.remove('shut');try{navigator.clipboard.writeText('')}catch(e){}};
 
 // UNLOCK
-function pick2(f){f2file=f;$('drop2').classList.add('has');$('dropTxt2').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub2').textContent=fmt(f.size);$('err2').hidden=true;chk()}
+function pick2(f){f2file=f;$('drop2').classList.add('has');$('dropTxt2').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub2').textContent=fmt(f.size);$('err2').hidden=true;chk();
+  f.slice(0,MAGIC.length+2).arrayBuffer().then(b=>{const u=new Uint8Array(b);if(f2file!==f)return;const ok=u.length===MAGIC.length+2&&MAGIC.every((x,i)=>u[i]===x);$('dropSub2').textContent=fmt(f.size)+(ok?' · File '+fidOf(u,MAGIC.length):' · not a Send Safe file')}).catch(()=>{})}
 function chk(){$('go').disabled=!(f2file&&$('k2').value.trim().length>=20)}
 $('k2').addEventListener('input',chk);
 $('go').onclick=async()=>{
   $('err2').hidden=true;lw.classList.add('busy');
   try{
     const[r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
-    outFiles=r.files.map(f=>({name:f.name,risky:f.risky,bytes:f.bytes,blob:blobOf(f.bytes,f.type)}));zipName=fname(r.sent).replace(/\.dat$/,'.zip');
+    outFiles=r.files.map(f=>({name:f.name,risky:f.risky,bytes:f.bytes,blob:blobOf(f.bytes,f.type)}));zipName=fname(r.sent,r.id).replace(/\.dat$/,'.zip');
     $('meta2').textContent='Sent safely '+dstr(r.sent)+(r.exp?'\nExpires '+dstr(r.exp):'');
     const L=$('list2');L.textContent='';
     for(const g of groupBy(outFiles,x=>x.name)){
@@ -453,7 +458,7 @@ $('go').onclick=async()=>{
     $('saveAll').hidden=safe.length<2;
     $('share2').hidden=!safe.length||!canShare(hasDir?[new File([''],'a.zip',{type:'application/zip'})]:safe.map(f=>mk(f.blob,f.name)));
     $('k2').value='';
-  }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent=e.message==='expired'?'Expired — ask for a new file':'Wrong key or damaged file';x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
+  }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent=({expired:'Expired — ask for a new file',notsend:'That isn’t a Send Safe file — pick the locked file you were sent',short:'This file is incomplete — ask for it again',badkey:'That key looks incomplete — it has 25 letters and numbers (File '+e.id+')'}[e.message])||('This key doesn’t open this file (File '+e.id+'). Use the key sent with this exact file.');x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
 };
 $('saveAll').onclick=()=>save(zipStore(outFiles.filter(f=>!f.risky)),zipName);
 $('share2').onclick=()=>{const safe=outFiles.filter(f=>!f.risky);share(safe.some(f=>f.name.includes('/'))?[mk(zipStore(safe),zipName)]:safe.map(f=>mk(f.blob,f.name)))};
