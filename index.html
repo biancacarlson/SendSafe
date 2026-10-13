@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#060812">
+<title>Send Safe</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237c5cff'/%3E%3Cstop offset='1' stop-color='%2319d3a2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M11 15v-3a5 5 0 0 1 10 0v3' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='8' y='15' width='16' height='10' rx='3' fill='white'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#060812;--ink:#f3f5ff;--dim:#8a91b4;--line:rgba(255,255,255,.09);--glass:rgba(255,255,255,.055);--a:#7c5cff;--b:#19d3a2;--bad:#ff6b8a;--r:22px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.4 ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;display:flex;justify-content:center;padding:max(22px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));overflow-x:hidden}
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.aurora i{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.34;animation:drift 22s ease-in-out infinite alternate}
+.aurora i:nth-child(1){background:var(--a);left:-30vmax;top:-30vmax}
+.aurora i:nth-child(2){background:var(--b);right:-35vmax;bottom:-35vmax;animation-duration:28s;opacity:.26}
+@keyframes drift{to{transform:translate3d(9vmax,6vmax,0) scale(1.12)}}
+main{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:20px;margin:auto 0}
+.hero{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px}
+.lockwrap{position:relative;width:96px;height:96px;display:grid;place-items:center}
+.lockwrap::before{content:"";position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,var(--a),var(--b),var(--a));opacity:0;filter:blur(.2px);transition:opacity .4s;-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%)}
+.lockwrap.busy::before{opacity:1;animation:spin 1s linear infinite}
+.lockwrap::after{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.35),transparent 70%);filter:blur(10px);z-index:-1;animation:pulse 3.4s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.25);opacity:.6}}
+.lock{width:64px;height:64px;overflow:visible}
+.shackle{transform-box:fill-box;transform-origin:100% 100%;transition:transform .55s cubic-bezier(.3,1.6,.5,1)}
+.lockwrap:not(.shut) .shackle{transform:translateY(-7px) rotate(-18deg)}
+.lockwrap.pop .lock{animation:pop .6s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pop{40%{transform:scale(1.16)}}
+h1{margin:0;font-size:28px;font-weight:750;letter-spacing:-.02em;background:linear-gradient(120deg,#fff 30%,#c9bfff 60%,#9af0d6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:5px;border-radius:999px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-weight:650;padding:11px 0;border-radius:999px;cursor:pointer;transition:color .3s}
+.tabs button[aria-selected=true]{color:#fff}
+.pill{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:999px;background:linear-gradient(120deg,var(--a),#5b8cff 60%,var(--b));box-shadow:0 6px 24px -6px rgba(124,92,255,.7);transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.tabs[data-t="1"] .pill{transform:translateX(100%)}
+.card{width:100%;padding:18px;border-radius:var(--r);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 20px 60px -30px #000;display:flex;flex-direction:column;gap:14px;animation:rise .5s cubic-bezier(.2,.9,.3,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.98)}}
+[hidden]{display:none!important}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:170px;border-radius:18px;border:1.5px dashed rgba(255,255,255,.2);color:var(--dim);font-weight:600;cursor:pointer;transition:.25s;text-align:center;padding:16px;overflow:hidden}
+.drop:hover,.drop.over{border-color:var(--b);color:#fff;background:rgba(25,211,162,.07);transform:scale(1.01)}
+.drop svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0}
+.drop.has{border-style:solid;border-color:rgba(25,211,162,.5);color:#fff;min-height:96px}
+.drop small{color:var(--dim);font-weight:500;word-break:break-all}
+.btn{appearance:none;border:0;border-radius:16px;padding:15px 18px;font:inherit;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s,box-shadow .3s,opacity .3s;display:flex;align-items:center;justify-content:center;gap:9px}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:linear-gradient(120deg,var(--a),#5b8cff 55%,var(--b));box-shadow:0 10px 30px -10px rgba(124,92,255,.8)}
+.btn.sec{background:rgba(255,255,255,.08);border:1px solid var(--line)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.label button{all:unset;cursor:pointer;color:var(--b);text-transform:none;letter-spacing:0;font-size:14px}
+.key{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.key b{font:700 15px ui-monospace,"SF Mono",Menlo,monospace;text-align:center;padding:10px 0;border-radius:11px;background:rgba(255,255,255,.07);border:1px solid var(--line);letter-spacing:.06em;transition:filter .35s,opacity .35s;filter:blur(7px);opacity:.8;animation:chip .5s cubic-bezier(.2,.9,.3,1) both}
+.key.show b{filter:none;opacity:1}
+@keyframes chip{from{opacity:0;transform:translateY(8px) scale(.9)}}
+.key::after{content:"Tap to reveal";position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff;text-shadow:0 2px 14px #000;transition:opacity .3s;pointer-events:none}
+.key.show::after{opacity:0}
+.note{font-size:13.5px;color:var(--dim);display:flex;gap:8px;align-items:center}
+.note svg{width:16px;height:16px;stroke:var(--b);fill:none;stroke-width:2;flex:none}
+textarea{width:100%;min-height:92px;resize:none;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.28);color:#fff;font:600 15px ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;padding:14px;outline:none;transition:border-color .25s,box-shadow .25s}
+textarea:focus{border-color:var(--a);box-shadow:0 0 0 4px rgba(124,92,255,.18)}
+textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
+.err{color:var(--bad);font-weight:650;font-size:14.5px;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.done{display:flex;align-items:center;gap:10px;font-weight:700}
+.done .tick{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;animation:pop .6s cubic-bezier(.3,1.8,.5,1)}
+.done .tick svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.foot{font-size:12.5px;color:#5f668c;display:flex;align-items:center;gap:7px;margin-top:2px}
+.foot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--b);box-shadow:0 0 10px var(--b)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="aurora"><i></i><i></i></div>
+<main>
+  <div class="hero">
+    <div class="lockwrap" id="lw">
+      <svg class="lock" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#19d3a2"/></linearGradient></defs>
+        <path class="shackle" d="M22 28V22a10 10 0 0 1 20 0v6" fill="none" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
+        <rect x="12" y="28" width="40" height="28" rx="10" fill="url(#g)"/>
+        <circle cx="32" cy="40" r="3.6" fill="#060812"/><rect x="30.4" y="42" width="3.2" height="7" rx="1.6" fill="#060812"/>
+      </svg>
+    </div>
+    <h1>Send Safe</h1>
+  </div>
+
+  <div class="tabs" id="tabs" data-t="0" role="tablist">
+    <div class="pill"></div>
+    <button role="tab" aria-selected="true" data-i="0">Lock</button>
+    <button role="tab" aria-selected="false" data-i="1">Unlock</button>
+  </div>
+
+  <!-- LOCK -->
+  <section class="card" id="lockView">
+    <label class="drop" id="drop1">
+      <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      <span id="dropTxt1">Choose file</span><small id="dropSub1"></small>
+      <input type="file" id="f1">
+    </label>
+    <div id="result" hidden>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Locked</div>
+        <div class="row" id="saveRow">
+          <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save</button>
+          <button class="btn sec" id="share" hidden><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4-4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>Share</button>
+        </div>
+        <div class="label"><span>Key</span><button id="copy">Copy</button></div>
+        <div class="key" id="key"></div>
+        <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>Send the key another way.</div>
+        <button class="btn sec" id="again">Done</button>
+      </div>
+    </div>
+    <div class="err" id="err1" hidden></div>
+  </section>
+
+  <!-- UNLOCK -->
+  <section class="card" id="openView" hidden>
+    <label class="drop" id="drop2">
+      <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+      <span id="dropTxt2">Choose .sdoc</span><small id="dropSub2"></small>
+      <input type="file" id="f2">
+    </label>
+    <textarea id="k2" placeholder="Paste key" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false"></textarea>
+    <div class="err" id="err2" hidden></div>
+    <button class="btn pri" id="go" disabled><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>Unlock</button>
+    <div id="opened" hidden style="display:flex;flex-direction:column;gap:12px">
+      <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span id="oname" style="word-break:break-all"></span></div>
+      <div class="row"><button class="btn pri" id="save2"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save</button><button class="btn sec" id="share2" hidden>Share</button></div>
+      <button class="btn sec" id="again2">Done</button>
+    </div>
+  </section>
+
+  <div class="foot">Nothing leaves this device</div>
+</main>
+
+<script>
+//CRYPTO-START
+const MAGIC=new TextEncoder().encode('SSAFE1'),B32='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',MAX=50*1024*1024;
+function b32enc(a){let bits=0,val=0,o='';for(const x of a){val=(val<<8)|x;bits+=8;while(bits>=5){o+=B32[(val>>>(bits-5))&31];bits-=5}val&=(1<<bits)-1}if(bits)o+=B32[(val<<(5-bits))&31];return o}
+function b32dec(s){let bits=0,val=0;const o=[];for(const c of s){const i=B32.indexOf(c);if(i<0)throw new Error('k');val=(val<<5)|i;bits+=5;if(bits>=8){o.push((val>>>(bits-8))&255);bits-=8;val&=(1<<bits)-1}}return new Uint8Array(o)}
+function clean(n){return String(n||'file').replace(/[\\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,120)||'file'}
+async function seal(file){
+  const body=new Uint8Array(await file.arrayBuffer());
+  const meta=new TextEncoder().encode(JSON.stringify({n:file.name,t:file.type||''}));
+  const plain=new Uint8Array(4+meta.length+body.length);
+  new DataView(plain.buffer).setUint32(0,meta.length);plain.set(meta,4);plain.set(body,4+meta.length);
+  const raw=crypto.getRandomValues(new Uint8Array(32)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt']);
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:MAGIC},key,plain));
+  const out=new Uint8Array(MAGIC.length+12+ct.length);out.set(MAGIC);out.set(iv,MAGIC.length);out.set(ct,MAGIC.length+12);
+  const k=b32enc(raw);raw.fill(0);plain.fill(0);
+  return{bytes:out,key:k};
+}
+async function unseal(file,keyStr){
+  const norm=String(keyStr).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/0/g,'O').replace(/1/g,'I');
+  let raw;try{raw=b32dec(norm)}catch(e){throw new Error('bad')}
+  if(raw.length!==32)throw new Error('bad');
+  const d=new Uint8Array(await file.arrayBuffer());
+  if(d.length<MAGIC.length+12+16)throw new Error('bad');
+  for(let i=0;i<MAGIC.length;i++)if(d[i]!==MAGIC[i])throw new Error('bad');
+  const iv=d.slice(MAGIC.length,MAGIC.length+12),ct=d.slice(MAGIC.length+12);
+  const key=await crypto.subtle.importKey('raw',raw,'AES-GCM',false,['decrypt']);
+  let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},key,ct))}catch(e){throw new Error('bad')}
+  const ml=new DataView(plain.buffer,plain.byteOffset).getUint32(0);
+  const meta=JSON.parse(new TextDecoder().decode(plain.slice(4,4+ml)));
+  return{name:clean(meta.n),type:meta.t||'application/octet-stream',bytes:plain.slice(4+ml)};
+}
+//CRYPTO-END
+
+const $=id=>document.getElementById(id);
+const fmt=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let lockedBlob=null,lockedName='',keyText='',openBlob=null,openName='',f2file=null;
+const lw=$('lw');
+
+// tabs
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
+  $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
+  $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
+  lw.classList.toggle('shut',i===0&&!!lockedBlob)});
+
+// drag/drop
+for(const id of['drop1','drop2']){const d=$(id);
+  ['dragenter','dragover'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.add('over')}));
+  ['dragleave','drop'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.remove('over')}));
+  d.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)(id==='drop1'?lockFile:pick2)(f)})}
+$('f1').addEventListener('change',e=>{const f=e.target.files[0];if(f)lockFile(f);e.target.value=''});
+$('f2').addEventListener('change',e=>{const f=e.target.files[0];if(f)pick2(f);e.target.value=''});
+
+function bytesToBlob(b,t){return new Blob([b],{type:t||'application/octet-stream'})}
+function save(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
+function canShare(blob,name){try{return !!(navigator.canShare&&navigator.canShare({files:[new File([blob],name,{type:blob.type})]}))}catch(e){return false}}
+async function share(blob,name){try{await navigator.share({files:[new File([blob],name,{type:blob.type})]})}catch(e){}}
+
+// LOCK
+async function lockFile(f){
+  $('err1').hidden=true;
+  if(f.size>MAX){$('err1').textContent='Too big (50 MB max)';$('err1').hidden=false;return}
+  const d=$('drop1');d.classList.add('has');$('dropTxt1').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub1').textContent=fmt(f.size);
+  lw.classList.add('busy');
+  try{
+    const [r]=await Promise.all([seal(f),sleep(900)]);
+    const tag=b32enc(crypto.getRandomValues(new Uint8Array(3))).slice(0,4);
+    lockedName='SendSafe-'+tag+'.sdoc';lockedBlob=bytesToBlob(r.bytes);keyText=r.key.match(/.{1,4}/g).join('-');
+    const k=$('key');k.innerHTML='';k.classList.remove('show');
+    r.key.match(/.{1,4}/g).forEach((g,i)=>{const b=document.createElement('b');b.textContent=g;b.style.animationDelay=(i*45)+'ms';k.appendChild(b)});
+    lw.classList.remove('busy');lw.classList.add('shut','pop');setTimeout(()=>lw.classList.remove('pop'),700);
+    $('drop1').hidden=true;$('result').hidden=false;$('share').hidden=!canShare(lockedBlob,lockedName);
+    $('result').firstElementChild.style.animation='rise .5s both';
+  }catch(e){lw.classList.remove('busy');$('err1').textContent='Couldn’t lock this file';$('err1').hidden=false;d.classList.remove('has');$('dropTxt1').textContent='Choose file';$('dropSub1').textContent=''}
+}
+$('save').onclick=()=>save(lockedBlob,lockedName);
+$('share').onclick=()=>share(lockedBlob,lockedName);
+$('key').onclick=()=>$('key').classList.toggle('show');
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(keyText);$('copy').textContent='Copied';$('key').classList.add('show')}catch(e){$('key').classList.add('show');$('copy').textContent='Select & copy'}setTimeout(()=>$('copy').textContent='Copy',1800)};
+function resetLock(){lockedBlob=null;keyText='';$('key').innerHTML='';$('result').hidden=true;$('drop1').hidden=false;$('drop1').classList.remove('has');$('dropTxt1').textContent='Choose file';$('dropSub1').textContent='';lw.classList.remove('shut');try{navigator.clipboard.writeText('')}catch(e){}}
+$('again').onclick=resetLock;
+
+// UNLOCK
+function pick2(f){f2file=f;$('drop2').classList.add('has');$('dropTxt2').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub2').textContent=fmt(f.size);$('err2').hidden=true;chk()}
+function chk(){$('go').disabled=!(f2file&&$('k2').value.trim().length>=20)}
+$('k2').addEventListener('input',chk);
+$('go').onclick=async()=>{
+  $('err2').hidden=true;lw.classList.add('busy');
+  try{
+    const [r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
+    openBlob=bytesToBlob(r.bytes,r.type);openName=r.name;$('oname').textContent=openName;
+    lw.classList.remove('busy');lw.classList.remove('shut');lw.classList.add('pop');setTimeout(()=>lw.classList.remove('pop'),700);
+    $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;$('share2').hidden=!canShare(openBlob,openName);
+    $('k2').value='';
+  }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent='Wrong key or damaged file';x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
+};
+$('save2').onclick=()=>save(openBlob,openName);
+$('share2').onclick=()=>share(openBlob,openName);
+$('again2').onclick=()=>{openBlob=null;f2file=null;$('opened').hidden=true;$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose .sdoc';$('dropSub2').textContent='';$('k2').value='';chk()};
+
+// wipe key from screen when app is backgrounded
+document.addEventListener('visibilitychange',()=>{if(document.hidden)$('key').classList.remove('show')});
+</script>
+</body>
+</html>
