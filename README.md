@@ -1,116 +1,125 @@
-# Send Safe
+# Send Safe 🔒
 
-Send sensitive files without sending the key that unlocks them through the same channel.
+Send Safe lets you encrypt and send sensitive files in seconds. Uploaded docs are encrypted entirely in your browser into a secure `.dat` file, with a unique 25-character key generated for each one. Because it is a single-file application with zero external dependencies, your data never touches a server.
 
-Send Safe encrypts individual files or entire folders directly in your browser, packages them into a locked `.dat` file, and generates a unique key for each saved locked file. No account or server-side processing is required.
+## Quick Start
 
-**Private by design.** Files are encrypted on your device. The page makes no network requests, and your files and keys are never uploaded, stored, or tracked by Send Safe.
+### 1. Lock a File 🔒
 
-One file: `index.html`. No build, no server, no dependencies.
+1. Go to the **Lock** tab and upload your files or folders.
+2. Set an expiration date (1–30 days).
+3. Click **Lock**, download the generated `.dat` file, and copy the key.
+
+> **Golden Rule:** Share the `.dat` file separately from the key. For example, email the file and text the key.
+
+### 2. Unlock a File 🔓
+
+1. Go to the **Unlock** tab and upload the `.dat` file.
+2. Paste the 25-character key and click **Unlock**.
+3. Download your decrypted files.
 
 ## Features
 
-- **File and folder encryption:** Lock individual files or entire folders in one package.
-- **Unique access key:** Generate a unique 25-character key for each locked file.
-- **Separate delivery:** Send the locked file and its corresponding key through different channels.
-- **Configurable expiry:** Set a validity period of 1–30 days.
-- **Browser-based:** No installation, account, or external dependencies.
-- **Tamper detection:** Reject files that fail authenticated decryption.
-- **Local processing:** Files are encrypted and decrypted on your device.
+- 💻 **100% Client-Side:** No accounts, no tracking, and zero network requests.
+- 📁 **Folder Support:** Preserves full folder directories (downloads as a `.zip`).
+- 🔑 **High-Entropy Keys:** Generates a unique 25-character key split into 5 blocks.
+- 🛡️ **Tamper Proof:** Built-in authenticated decryption catches modified files instantly.
+- 🚫 **Code Execution Protection:** Proactively blocks potentially unsafe file extensions.
 
-## How It Works
+## System Limits & Guardrails
 
-### Locking Files
-
-1. Open the **Lock** tab and add files or an entire folder.
-2. Choose how long the locked file remains valid, from 1 to 30 days.
-3. Tap **Lock** to encrypt the contents.
-4. Save or share the locked file, then copy its corresponding key.
-5. Send the locked file and key through separate channels. For example, email the file and text the key.
-
-### Unlocking Files
-
-1. Open the **Unlock** tab and select the locked `.dat` file.
-2. Enter the corresponding key and tap **Unlock**.
-3. Save the recovered files to your device.
-4. Delete the files when you no longer need them.
-
-## Security
-
-### Encryption
-
-- **AES-256-GCM:** Files are encrypted locally using the browser's built-in Web Crypto API.
-- **Unique encryption parameters:** Each lock generates a new random key and initialization vector (IV).
-- **Random access key:** Each key contains 25 random characters, displayed in five groups of five, providing approximately 125 bits of entropy. Letter case, spaces, and dashes are ignored when entering the key.
-- **Integrity verification:** AES-GCM authenticates the encrypted contents. An incorrect key or modified encrypted data causes decryption to fail.
-- **No network requests:** A strict Content Security Policy blocks outbound connections, external scripts, and fonts. The page also disables referrer transmission and requests that search engines not index it.
-
-### Expiry and Key Management
-
-The selected expiry date is sealed inside the encrypted file. Send Safe checks that date before allowing the file to be unlocked.
-
-Expiry is a convenience safeguard, not a cryptographic access restriction. The check relies on the device's clock and the Send Safe application. Someone with both the locked file and its key could use other software to decrypt the contents or bypass the expiry check.
-
-Each saved locked file has its own unique key. Keep the key separate from the file and share it only with the intended recipient.
-
-A lost key cannot be recovered. Create a new locked file from the original, unencrypted files if you lose the key.
-
-## Limits and Safeguards
-
-- **Maximum package size:** 50 MB per locked file.
-- **Maximum file count:** 5,000 files per locked file.
-- **Email size warning:** Files larger than 20 MB trigger a warning that the package may be too large for email.
-- **Folder structure:** Folder structure is preserved. Unlocking a folder saves it as a `.zip` file. Multiple loose files can also be saved together as a `.zip`.
+| Guardrail | Limit / Behavior |
+| --- | --- |
+| Max package size | 50 MB per `.dat` file |
+| Max file count | 5,000 files per package |
+| Email warning | Triggers a warning if a package exceeds 20 MB |
+| Output naming | `Sent Safe YYYY-MM-DD ID.dat` |
 
 ### Restricted File Types
 
-Send Safe blocks file types that can execute code or conceal executable content, both when locking and when unlocking files.
+To protect users from malicious payloads, Send Safe blocks the encryption and decryption of:
 
-Restricted types include:
+| Category | Extensions |
+| --- | --- |
+| Executables / installers | `.exe`, `.msi`, `.dmg`, `.apk` |
+| Scripts | `.js`, `.bat`, `.ps1`, `.sh` |
+| Web languages | `.html`, `.svg` |
+| Macros | `.docm`, `.xlsm` |
+| Non-ZIP archives | `.rar`, `.7z`, `.tar`, `.gz` |
 
-- **Programs and installers:** `.exe`, `.msi`, `.dmg`, `.apk`, and similar formats.
-- **Scripts:** `.js`, `.bat`, `.ps1`, `.sh`, and similar formats.
-- **Web files:** `.html`, `.svg`.
-- **Macro-enabled Office documents:** `.docm`, `.xlsm`, and similar formats.
-- **Non-ZIP archives:** `.rar`, `.7z`, `.tar`, `.gz`, and similar formats.
+ZIP files are allowed as long as they don't contain restricted types.
 
-ZIP archives are accepted only if their contents do not include restricted file types.
+## Security Architecture
 
-### File Naming
+### Cryptographic Implementation
 
-Locked files use the naming format:
+- **Algorithm:** AES-256-GCM, managed natively through the browser's Web Crypto API.
+- **Parameters:** Every operation generates a brand-new, cryptographically random initialization vector (IV) and key.
+- **Lenient input:** The unlock field ignores spaces, dashes, and letter case, which makes it easy to enter on mobile.
 
+### Expiry Handling
+
+The expiry timestamp is sealed cryptographically inside the encrypted file, and Send Safe checks it before unlocking.
+
+> ⚠️ **Note:** Lost keys cannot be recovered. If you lose one, lock the original files again to get a new key.
+
+### Network Isolation
+
+A strict, embedded Content Security Policy (CSP) locks down the environment:
+
+- Disables all external scripts, fonts, and stylesheets.
+- Prevents data exfiltration by blocking all outbound connection types.
+- Disables HTTP referrers and asks search engine crawlers not to index the page.
+
+## Easy Deployment
+
+Send Safe is built entirely inside a single `index.html` file, so deployment needs no build pipeline, node modules, or servers.
+
+### Option A: GitHub Pages
+
+1. Create a public GitHub repository.
+2. Drop `index.html` straight into the repository root.
+3. Head over to **Settings ➡️ Pages**.
+4. Set the source to **Deploy from a branch**, choose `main` / `(root)`, and hit **Save**.
+
+### Option B: Local / Self-Hosted
+
+Serve it from any static server. Web Crypto requires a secure context (`https://` or `localhost`) to function.
+
+```bash
+# Example: quickly serve locally with Python
+python3 -m http.server 8080
 ```
-Sent Safe YYYY-MM-DD ID.dat
-```
 
-The short ID appears alongside the corresponding key, making it easier to match each key to its locked file.
+## Compatibility
 
-## Deployment
+- **Browsers:** Modern versions of Chrome, Edge, Firefox, and Safari (desktop and mobile).
+- **UI controls:** Drag-and-drop on desktop, and the native file picker on mobile.
 
-Send Safe consists of a single file: `index.html`.
+## ⚖️ Legal Disclaimer & Liability Disclosure
 
-There is no build process, server, package installation, or external dependency.
+### 1. "As-Is" Software Provision
 
-### Publish with GitHub Pages
+Send Safe is provided on an **"AS IS" and "AS AVAILABLE" basis**, without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
 
-1. Create a new public GitHub repository.
-2. Upload `index.html` to the repository root.
-3. Open **Settings → Pages**.
-4. Under the build and deployment settings, select **Deploy from a branch**.
-5. Choose the `main` branch and `/ (root)` folder, then save.
-6. Open the published Pages URL, usually `https://<username>.github.io/<repo>/`.
+### 2. Limitation of Liability
 
-Any static host that serves the page over HTTPS can be used. Web Crypto requires a secure context, such as HTTPS or localhost. GitHub Pages provides HTTPS.
+In no event shall the authors, developers, copyright holders, or hosts of this webpage or repository be liable for any claims, damages, or other liabilities, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software. This includes, without limitation, damages for:
 
-### Browser Support
+- **Data loss:** Permanent loss or corruption of files during encryption or decryption.
+- **Key loss:** Inability to access encrypted files due to a forgotten, altered, or lost 25-character access key (keys are mathematically unrecoverable).
+- **Security bypasses:** Bypassing of the local device-clock-dependent expiry system by sophisticated actors.
 
-Use a current version of Chrome, Edge, Firefox, or Safari on desktop or mobile.
+### 3. User Responsibility & Content Compliance
 
-On desktop, files and folders can be dragged onto the page. On phones and tablets, use the **Files** and **Folder** buttons to select content.
+Send Safe is a neutral, 100% client-side privacy tool. It does not look at, store, log, or transmit user data. Because all processing occurs strictly on your local device, the operators of this software have zero visibility into, control over, or access to your files.
 
-## Trust and Updates
+By using this tool, you acknowledge and agree that:
 
-Both the sender and recipient use the hosted Send Safe page to lock and unlock files. Host it somewhere you control and trust. Anyone who can modify `index.html` can change what the application does.
+- You are solely responsible for the content of the files you encrypt and distribute.
+- You will not use this tool to transmit, package, or hide illegal material, malware, or content that violates intellectual property or regional laws.
+- You assume all legal and regulatory risks associated with the distribution and receipt of your data.
 
-Locked files created by earlier versions of Send Safe remain compatible with this version, provided the underlying file format and encryption handling remain compatible.
+### 4. Cryptographic Export Control Notice
+
+This software uses strong symmetric encryption (AES-256-GCM) managed through the native web browser environment. Depending on your country or jurisdiction, importing, exporting, hosting, or using software capable of 256-bit encryption may be subject to restricted legal regulations. It is your responsibility to ensure compliance with local import/export control laws before hosting or operating this application.
