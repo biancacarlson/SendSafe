@@ -40,8 +40,13 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
 h1.sent{color:var(--gold)}
-h1.sent #tw{display:inline-block;animation:wordIn .6s var(--ease) both}
-@keyframes wordIn{from{opacity:0;transform:translateY(.5em) scale(.88)}}
+h1{transition:color .7s var(--ease)}
+#tw .ch{display:inline-grid;width:var(--wa,auto);transition:width .6s var(--ease)}
+h1.sent #tw .ch{width:var(--wb,auto)}
+#tw .ch>span{grid-area:1/1;justify-self:start;transition:opacity .55s var(--ease),transform .65s var(--ease)}
+#tw .ch .b{opacity:0;transform:translateY(.45em)}
+h1.sent #tw .ch .a{opacity:0;transform:translateY(-.45em)}
+h1.sent #tw .ch .b{opacity:1;transform:none}
 h1 .tk{display:inline-grid;place-items:center;width:30px;height:30px;margin-left:12px;border-radius:50%;background:var(--gold);vertical-align:.06em;animation:tkPop .8s var(--ease) both,ring 1.1s .15s ease-out}
 h1 .tk svg{width:16px;height:16px;stroke:var(--bg);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;animation:draw .45s .25s ease-out forwards}
 @keyframes tkPop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
@@ -182,8 +187,6 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
   .note{font-size:14px}
 }
 @media (min-width:1280px){main{max-width:640px}}
-h1.tpop #tw{display:inline-block;animation:wordPop .6s var(--ease)}
-@keyframes wordPop{0%{transform:none}30%{transform:scale(.88)}65%{transform:scale(1.1)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-delay:0s!important;transition-delay:0s!important}}
 </style>
 </head>
@@ -198,7 +201,7 @@ h1.tpop #tw{display:inline-block;animation:wordPop .6s var(--ease)}
         <circle cx="32" cy="39.5" r="2.6" fill="#c8ad78"/><path d="M32 42v5" stroke="#c8ad78" stroke-width="2"/>
       </svg>
     </div>
-    <h1><span id="tw">Send</span> Safe<span class="tk" id="tk" hidden><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span></h1>
+    <h1><span id="tw" aria-hidden="true">Sen<span class="ch"><span class="a">d</span><span class="b">t</span></span></span> Safe<span class="tk" id="tk" hidden><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span></h1>
   </div>
 
   <div class="tabs" id="tabs" data-t="0" role="tablist">
@@ -367,19 +370,20 @@ const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',IC
 
 // tabs
 function swapFx(){
-  const h=$('tw').parentNode;h.classList.remove('tpop');void h.offsetWidth;h.classList.add('tpop');setTimeout(()=>h.classList.remove('tpop'),650);
   lw.classList.remove('swap');void lw.offsetWidth;lw.classList.add('swap');setTimeout(()=>lw.classList.remove('swap'),950)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
   if(String(i)===$('tabs').dataset.t)return;
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
   lw.classList.toggle('shut',i===0);syncTitle();swapFx()});
+function fitCh(){const c=document.querySelector('#tw .ch');if(!c)return;c.style.setProperty('--wa',c.querySelector('.a').getBoundingClientRect().width+'px');c.style.setProperty('--wb',c.querySelector('.b').getBoundingClientRect().width+'px')}
+fitCh();addEventListener('load',fitCh);addEventListener('resize',fitCh);
 let seen=false;
 function syncTitle(){
   if($('opened').hidden)seen=false;
   const on=!$('opened').hidden&&$('tabs').dataset.t==='1',t=$('tw').parentNode,was=t.classList.contains('sent'),first=on&&!seen;
   t.classList.toggle('still',on&&seen);
-  $('tw').textContent=on?'Sent':'Send';$('tk').hidden=!on;t.classList.toggle('sent',on);lw.classList.toggle('ok',on);
+  t.setAttribute('aria-label',on?'Sent Safe':'Send Safe');$('tk').hidden=!on;t.classList.toggle('sent',on);lw.classList.toggle('ok',on);
   if(on)seen=true;
   if(first&&!was){window.scrollTo({top:0,behavior:'smooth'});lw.classList.remove('burst');void lw.offsetWidth;lw.classList.add('burst');setTimeout(()=>lw.classList.remove('burst'),1000)}}
 
