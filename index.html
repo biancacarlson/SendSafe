@@ -440,7 +440,7 @@ $('go').onclick=async()=>{
   try{
     const[r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
     outFiles=r.files.map(f=>({name:f.name,risky:f.risky,bytes:f.bytes,blob:blobOf(f.bytes,f.type)}));zipName=fname(r.sent,r.id).replace(/\.dat$/,'.zip');
-    $('meta2').textContent='Sent safely '+dstr(r.sent)+(r.exp?'\nExpires '+dstr(r.exp):'');
+    $('meta2').textContent='Sent safely with Send Safe\n'+dstr(r.sent)+(r.exp?' · Expires '+dstr(r.exp):'');
     const L=$('list2');L.textContent='';
     for(const g of groupBy(outFiles,x=>x.name)){
       if(g.folder){
