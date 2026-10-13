@@ -127,6 +127,12 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 @media (max-width:339px){.note{white-space:normal;text-align:center;font-size:12px}}
 .note{white-space:nowrap;font-size:clamp(10px,calc((100vw - 84px)/24.5),13px)}
 @media (max-width:399px){.note svg{display:none}}
+.stack{display:grid;width:100%}
+.stack>.card{grid-area:1/1;transition:opacity .35s var(--ease),visibility .35s}
+.stack>.card[hidden]{display:flex!important;visibility:hidden;opacity:0;pointer-events:none}
+.stack>.card>.drop{flex:1}
+h1.still #tw,h1.still .tk,h1.still .tk svg{animation:none}
+h1.still .tk svg{stroke-dashoffset:0}
 /* keyboard focus (all sizes) */
 button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .tabs button:focus-visible{outline-offset:-3px}
@@ -189,6 +195,7 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
     <button role="tab" aria-selected="false" data-i="1">Unlock</button>
   </div>
 
+  <div class="stack">
   <!-- LOCK -->
   <section class="card" id="lockView">
     <div class="drop pick" id="drop1">
@@ -220,8 +227,7 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
     </div>
     <div id="result" hidden>
       <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="done">Locked</div>
-        <div class="sum" id="meta1" style="margin-top:-8px;white-space:pre-line"></div>
+        <div class="sum" id="meta1" style="white-space:pre-line"></div>
         <div class="row" id="saveRow">
           <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save file</button>
           <button class="btn sec" id="share" hidden><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4-4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>Share</button>
@@ -246,15 +252,15 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
     <div class="err" id="err2" hidden></div>
     <button class="btn pri" id="go" disabled><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>Unlock</button>
     <div id="opened" hidden style="display:flex;flex-direction:column;gap:12px">
-      <div class="done">Unlocked</div>
-      <div class="sum" id="meta2" style="margin-top:-6px;white-space:pre-line"></div>
+      <div class="sum" id="meta2" style="white-space:pre-line"></div>
       <div class="list" id="list2"></div>
       <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>When you’re done, delete the unlocked files.</div>
-      <button class="btn pri" id="saveAll" hidden><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save all</button>
-      <button class="btn sec" id="share2" hidden>Share all</button>
+      <button class="btn pri" id="saveAll" hidden><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save</button>
+      <button class="btn sec" id="share2" hidden>Share</button>
       <button class="btn sec" id="again2">Done</button>
     </div>
   </section>
+  </div>
 
 </main>
 
@@ -352,10 +358,14 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
   lw.classList.toggle('shut',i===0&&!!lockedBlob);syncTitle()});
+let seen=false;
 function syncTitle(){
-  const on=!$('opened').hidden&&$('tabs').dataset.t==='1',t=$('tw').parentNode,was=t.classList.contains('sent');
+  if($('opened').hidden)seen=false;
+  const on=!$('opened').hidden&&$('tabs').dataset.t==='1',t=$('tw').parentNode,was=t.classList.contains('sent'),first=on&&!seen;
+  t.classList.toggle('still',on&&seen);
   $('tw').textContent=on?'Sent':'Send';$('tk').hidden=!on;t.classList.toggle('sent',on);lw.classList.toggle('ok',on);
-  if(on&&!was){window.scrollTo({top:0,behavior:'smooth'});lw.classList.remove('burst');void lw.offsetWidth;lw.classList.add('burst');setTimeout(()=>lw.classList.remove('burst'),1000)}}
+  if(on)seen=true;
+  if(first&&!was){window.scrollTo({top:0,behavior:'smooth'});lw.classList.remove('burst');void lw.offsetWidth;lw.classList.add('burst');setTimeout(()=>lw.classList.remove('burst'),1000)}}
 
 // rows + grouping (a folder shows as one row)
 function mkRow(name,small,o={}){
