@@ -29,7 +29,13 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lockwrap.shut .lock .st{stroke:var(--gold)}
 .shackle{transform-box:fill-box;transform-origin:0 100%}
 .lock .shackle{transition:transform .55s cubic-bezier(.34,1.35,.5,1),stroke .7s var(--ease)}
-.lockwrap:not(.shut) .shackle{transform:rotate(-34deg);transition:transform .6s var(--ease),stroke .7s var(--ease)}
+.lockwrap:not(.shut) .shackle{transform:translateY(-2.5px) rotate(-34deg);transition:transform .7s cubic-bezier(.3,1.5,.5,1),stroke .7s var(--ease)}
+.lockwrap{transition:border-color .7s var(--ease)}
+.lockwrap.shut{border-color:rgba(200,173,120,.38)}
+.lockwrap.swap{animation:swapRing .95s var(--ease)}
+.lockwrap.swap .lock{animation:swapTilt .8s var(--ease)}
+@keyframes swapRing{0%{box-shadow:0 0 0 0 rgba(200,173,120,.42)}100%{box-shadow:0 0 0 30px rgba(200,173,120,0)}}
+@keyframes swapTilt{0%{transform:none}25%{transform:scale(.86) rotate(-7deg)}60%{transform:scale(1.08) rotate(3deg)}100%{transform:none}}
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
 h1.sent{color:var(--gold)}
@@ -45,12 +51,15 @@ h1 .tk svg{width:16px;height:16px;stroke:var(--bg);fill:none;stroke-width:3;stro
 .lockwrap.burst{animation:burst 1s ease-out}
 @keyframes burst{0%{box-shadow:0 0 0 0 rgba(200,173,120,.5)}100%{box-shadow:0 0 0 44px rgba(200,173,120,0)}}
 h1{margin:0;font:500 31px/1 var(--serif);letter-spacing:.02em;color:var(--ink)}
-.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
-.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:12px 0;cursor:pointer;transition:color .35s}
+.tabs{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:12px 0;cursor:pointer;transition:color .4s var(--ease)}
 .tabs button[aria-selected=true]{color:var(--bg)}
-.pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:var(--ink);transition:transform .45s var(--ease)}
+.pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:var(--ink);transition:transform .55s cubic-bezier(.4,1.12,.4,1);transform-origin:0 50%}
+.tabs[data-t="1"] .pill{transform-origin:100% 50%}
+.pill.go{animation:stretch .55s var(--ease)}
+@keyframes stretch{45%{scale:1.16 .93}}
 .tabs[data-t="1"] .pill{transform:translateX(100%)}
-.card{width:100%;padding:20px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:0 40px 70px -45px #000,inset 0 1px 0 rgba(255,255,255,.035);display:flex;flex-direction:column;gap:16px;animation:rise .55s var(--ease) both}
+.card{width:100%;padding:20px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:0 40px 70px -45px #000,inset 0 1px 0 rgba(255,255,255,.035);display:flex;flex-direction:column;gap:16px;position:relative;animation:rise .55s var(--ease) backwards}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}}
 [hidden]{display:none!important}
 .drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:176px;border-radius:14px;border:1px dashed var(--line2);color:var(--dim);font-size:15px;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:border-color .3s,color .3s,background .3s;text-align:center;padding:16px;overflow:hidden}
@@ -128,9 +137,16 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 @media (max-width:339px){.note{white-space:normal;text-align:center;font-size:12px}}
 .note{white-space:nowrap;font-size:clamp(10px,calc((100vw - 84px)/24.5),13px)}
 @media (max-width:399px){.note svg{display:none}}
-.stack{display:grid;width:100%}
-.stack>.card{grid-area:1/1;transition:opacity .35s var(--ease),visibility .35s}
-.stack>.card[hidden]{display:flex!important;visibility:hidden;opacity:0;pointer-events:none}
+.stack{display:grid;width:100%;--sx:30px;overflow-x:clip}
+.stack>.card{grid-area:1/1;transition:opacity .55s var(--ease) .14s,transform .75s var(--ease) .14s,filter .55s var(--ease) .14s,visibility 0s .14s}
+.stack>.card[hidden]{display:flex!important;visibility:hidden;opacity:0;pointer-events:none;filter:blur(5px);transition:opacity .26s ease,transform .45s var(--ease),filter .3s ease,visibility 0s .45s}
+#lockView[hidden]{transform:translateX(calc(var(--sx)*-1)) scale(.97)}
+#openView[hidden]{transform:translateX(var(--sx)) scale(.97)}
+.card.enter{overflow:hidden}
+.card.enter>*:not(.err){animation:childIn .65s var(--ease) var(--d,0s) backwards}
+@keyframes childIn{from{opacity:0;transform:translateY(14px)}}
+.card.enter::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(200,173,120,.11) 50%,transparent 62%);transform:translateX(-110%);animation:sweep 1s .18s var(--ease) forwards}
+@keyframes sweep{to{transform:translateX(110%)}}
 .stack>.card>.drop{flex:1}
 h1.still #tw,h1.still .tk,h1.still .tk svg{animation:none}
 h1.still .tk svg{stroke-dashoffset:0}
@@ -143,6 +159,7 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
 @media (min-width:820px){
   body{padding-top:48px;padding-bottom:48px}
   main{max-width:600px;gap:30px}
+  .stack{--sx:56px}
   .hero{gap:20px}
   .lockwrap{width:112px;height:112px}
   .lockwrap::after{inset:-34px}
@@ -174,7 +191,7 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
   .note{font-size:14px}
 }
 @media (min-width:1280px){main{max-width:640px}}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-delay:0s!important;transition-delay:0s!important}.stack>.card{transform:none!important;filter:none!important}}
 </style>
 </head>
 <body>
@@ -356,10 +373,18 @@ let zipName='',days=7,staged=[],lockedBlob=null,lockedName='',keyText='',f2file=
 const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',ICO_DL='<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>',ICO_F='<svg class="fi" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>';
 
 // tabs
+function swapFx(i){
+  const pill=document.querySelector('.pill');pill.classList.remove('go');void pill.offsetWidth;pill.classList.add('go');
+  lw.classList.remove('swap');void lw.offsetWidth;lw.classList.add('swap');setTimeout(()=>lw.classList.remove('swap'),950);
+  const c=i===0?$('lockView'):$('openView');
+  [...c.children].filter(x=>!x.hidden).forEach((x,n)=>x.style.setProperty('--d',(150+n*70)+'ms'));
+  c.classList.remove('enter');void c.offsetWidth;c.classList.add('enter');
+  clearTimeout(c._t);c._t=setTimeout(()=>c.classList.remove('enter'),1400)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
+  if(String(i)===$('tabs').dataset.t)return;
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
-  lw.classList.toggle('shut',i===0);syncTitle()});
+  lw.classList.toggle('shut',i===0);syncTitle();swapFx(i)});
 let seen=false;
 function syncTitle(){
   if($('opened').hidden)seen=false;
