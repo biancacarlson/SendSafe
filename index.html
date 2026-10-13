@@ -31,6 +31,9 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lockwrap:not(.shut) .shackle{transform:translateY(-5px) rotate(-14deg)}
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
+h1 .tk{display:inline-grid;place-items:center;width:24px;height:24px;margin-left:12px;border-radius:50%;border:1px solid var(--gold);background:rgba(200,173,120,.1);vertical-align:.1em;animation:pop .7s var(--ease)}
+h1 .tk svg{width:12px;height:12px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+h1+.tag{margin:-6px 0 0;font:italic 16px var(--serif);letter-spacing:.03em;color:var(--dim)}
 h1{margin:0;font:500 31px/1 var(--serif);letter-spacing:.02em;color:var(--ink)}
 .tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:12px 0;cursor:pointer;transition:color .35s}
@@ -123,7 +126,8 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
         <circle cx="32" cy="39.5" r="2.6" fill="#c8ad78"/><path d="M32 42v5" stroke="#c8ad78" stroke-width="2"/>
       </svg>
     </div>
-    <h1>Send Safe</h1>
+    <h1><span id="tw">Send</span> Safe<span class="tk" id="tk" hidden><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span></h1>
+    <p class="tag">Send safe. Sent safely.</p>
   </div>
 
   <div class="tabs" id="tabs" data-t="0" role="tablist">
@@ -294,7 +298,8 @@ const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',IC
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
-  lw.classList.toggle('shut',i===0&&!!lockedBlob)});
+  lw.classList.toggle('shut',i===0&&!!lockedBlob);syncTitle()});
+function syncTitle(){const on=!$('opened').hidden&&$('tabs').dataset.t==='1';$('tw').textContent=on?'Sent':'Send';$('tk').hidden=!on}
 
 // rows + grouping (a folder shows as one row)
 function mkRow(name,small,o={}){
@@ -440,7 +445,7 @@ $('go').onclick=async()=>{
   try{
     const[r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
     outFiles=r.files.map(f=>({name:f.name,risky:f.risky,bytes:f.bytes,blob:blobOf(f.bytes,f.type)}));zipName=fname(r.sent,r.id).replace(/\.dat$/,'.zip');
-    $('meta2').textContent='Sent safely with Send Safe\n'+dstr(r.sent)+(r.exp?' · Expires '+dstr(r.exp):'');
+    $('meta2').textContent=dstr(r.sent)+(r.exp?' · Expires '+dstr(r.exp):'');
     const L=$('list2');L.textContent='';
     for(const g of groupBy(outFiles,x=>x.name)){
       if(g.folder){
@@ -453,7 +458,7 @@ $('go').onclick=async()=>{
         if(f.risky)L.appendChild(mkRow(f.name,'Blocked',{bad:1}));
         else{const row=mkRow(f.name,fmt(f.blob.size));row.appendChild(mkBtn('Save',ICO_DL,()=>save(f.blob,f.name)));L.appendChild(row)}}}
     lw.classList.remove('busy','shut');lw.classList.add('pop');setTimeout(()=>lw.classList.remove('pop'),700);
-    $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;
+    $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;syncTitle();
     const safe=outFiles.filter(f=>!f.risky),hasDir=safe.some(f=>f.name.includes('/'));
     $('saveAll').hidden=safe.length<2;
     $('share2').hidden=!safe.length||!canShare(hasDir?[new File([''],'a.zip',{type:'application/zip'})]:safe.map(f=>mk(f.blob,f.name)));
@@ -462,7 +467,7 @@ $('go').onclick=async()=>{
 };
 $('saveAll').onclick=()=>save(zipStore(outFiles.filter(f=>!f.risky)),zipName);
 $('share2').onclick=()=>{const safe=outFiles.filter(f=>!f.risky);share(safe.some(f=>f.name.includes('/'))?[mk(zipStore(safe),zipName)]:safe.map(f=>mk(f.blob,f.name)))};
-$('again2').onclick=()=>{outFiles=[];f2file=null;$('list2').textContent='';$('opened').hidden=true;$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose the locked file';$('dropSub2').textContent='';$('k2').value='';chk()};
+$('again2').onclick=()=>{outFiles=[];f2file=null;$('list2').textContent='';$('opened').hidden=true;syncTitle();$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose the locked file';$('dropSub2').textContent='';$('k2').value='';chk()};
 </script>
 </body>
 </html>
