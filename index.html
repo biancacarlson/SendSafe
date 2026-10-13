@@ -73,9 +73,30 @@ h1{margin:0;font:500 31px/1 var(--serif);letter-spacing:.02em;color:var(--ink)}
 .ib svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .sum{font-size:13px;color:var(--dim);text-align:center;letter-spacing:.02em}
 .sum.warn{color:#d9b26a}
-.chips{display:flex;gap:8px}
-.chip{all:unset;flex:1;text-align:center;padding:10px 0;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:500;color:var(--dim);cursor:pointer;transition:.3s}
-.chip[aria-pressed=true]{color:var(--ink);border-color:var(--gold);background:rgba(200,173,120,.08)}
+.drop.pick{cursor:default;gap:14px}
+.drop.pick:hover{color:var(--dim);border-color:var(--line2);background:none}
+.drop.pick.over{border-color:var(--gold);color:var(--ink);background:rgba(200,173,120,.05)}
+.btns{display:flex;gap:10px;width:100%;max-width:300px}
+.btns .btn{flex:1;padding:12px 10px}
+@media (hover:none){.dz-hint{display:none}}
+.fi{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:9px}
+.item small.w{color:#d9b26a;font-weight:600}
+.key b{-webkit-user-select:text;user-select:text}
+.days{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.dval{display:flex;align-items:baseline;gap:8px}
+.dval b{font:500 38px/1 var(--serif);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+.dval span{font-size:15px;color:var(--dim);min-width:3.2ch}
+.ib.lg{width:42px;height:42px}
+.ib.lg svg{width:18px;height:18px}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-top:-8px;padding:0 2px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:none;margin:0;cursor:pointer;--p:20%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:linear-gradient(to right,var(--gold) var(--p),var(--line2) var(--p))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--ink);border:0;margin-top:-10px;box-shadow:0 0 0 4px rgba(200,173,120,.25),0 4px 10px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--line2)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--gold)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border:0;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px rgba(200,173,120,.25)}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 6px rgba(200,173,120,.45)}
+input[type=range]:focus{outline:none}
 .note{font-size:13px;color:var(--dim);display:flex;gap:9px;align-items:center;letter-spacing:.01em}
 .note svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:1.7;flex:none}
 textarea{width:100%;min-height:92px;resize:none;border-radius:12px;border:1px solid var(--line);background:#0c0d10;color:var(--ink);font:500 15px var(--mono);letter-spacing:.08em;padding:14px;outline:none;transition:border-color .3s,box-shadow .3s}
@@ -113,20 +134,32 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 
   <!-- LOCK -->
   <section class="card" id="lockView">
-    <label class="drop" id="drop1">
+    <div class="drop pick" id="drop1">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-      <span>Choose files or a zip</span>
-      <input type="file" id="f1" multiple>
-    </label>
+      <span>Add files or a folder<span class="dz-hint"> — or drop them here</span></span>
+      <div class="btns">
+        <button class="btn sec" id="pickFiles" type="button">Files</button>
+        <button class="btn sec" id="pickDir" type="button">Folder</button>
+      </div>
+      <input type="file" id="f1" multiple hidden>
+      <input type="file" id="f1d" webkitdirectory hidden>
+    </div>
     <div id="staged" hidden style="display:flex;flex-direction:column;gap:12px">
       <div class="list" id="list1"></div>
       <div class="sum" id="sum1"></div>
-      <div class="label"><span>Expires</span></div>
-      <div class="chips" id="chips"><button class="chip" data-d="1" aria-pressed="false">1 day</button><button class="chip" data-d="7" aria-pressed="true">7 days</button><button class="chip" data-d="30" aria-pressed="false">30 days</button></div>
       <div class="row">
-        <label class="btn sec" style="position:relative;cursor:pointer"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add<input type="file" id="f1b" multiple style="position:absolute;inset:0;opacity:0;font-size:0;width:100%;height:100%;cursor:pointer"></label>
-        <button class="btn pri" id="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button>
+        <button class="btn sec" id="addFiles" type="button"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Files</button>
+        <button class="btn sec" id="addDir" type="button"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>Folder</button>
       </div>
+      <div class="label"><span>Expires in</span><span id="expDate"></span></div>
+      <div class="days">
+        <button class="ib lg" id="dm" type="button" aria-label="One day less"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+        <div class="dval"><b id="dnum">7</b><span id="dunit">days</span></div>
+        <button class="ib lg" id="dp" type="button" aria-label="One day more"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+      <input type="range" id="dRange" min="1" max="30" step="1" value="7" aria-label="Days until expiry">
+      <div class="ends"><span>1 day</span><span>30 days</span></div>
+      <button class="btn pri" id="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button>
     </div>
     <div id="result" hidden>
       <div style="display:flex;flex-direction:column;gap:14px">
@@ -139,7 +172,6 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
         <div class="label"><span>Your key</span></div>
         <div class="key" id="key"></div>
         <button class="btn pri" id="copy"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span id="copyTxt">Copy key</span></button>
-        <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>Send the key by text or call. Not in the email.</div>
         <button class="btn sec" id="again">Done</button>
       </div>
     </div>
@@ -182,7 +214,9 @@ async function aes(k,use){const h=await crypto.subtle.digest('SHA-256',new TextE
 function clean(n){return String(n||'file').replace(/[\u202a-\u202e\u2066-\u2069\u200b-\u200f\ufeff]/g,'').replace(/[\\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,120)||'file'}
 const RISKY=new Set('exe msi bat cmd com scr pif js jse mjs vbs vbe wsf wsh ps1 psm1 sh jar apk app dmg pkg iso img lnk reg dll hta cpl msc deb rpm html htm xhtml svg docm xlsm pptm dotm xltm xlam rar 7z tar gz tgz'.split(' '));
 function extOf(n){const m=/\.([^.]+)$/.exec(String(n).trim());return m?m[1].toLowerCase():''}
-function isRisky(n){return RISKY.has(extOf(clean(n)))}
+function riskyExt(p){for(const s of String(p).split(/[\\/]/)){const e=extOf(clean(s));if(RISKY.has(e))return e}return''}
+function isRisky(n){return!!riskyExt(n)}
+function cleanPath(p){return String(p||'file').split(/[\\/]+/).filter(s=>s&&s!=='.'&&s!=='..').map(clean).join('/').slice(0,240)||'file'}
 function zipNames(b){
   const dv=new DataView(b.buffer,b.byteOffset,b.length);let e=-1;
   for(let i=b.length-22;i>=Math.max(0,b.length-65557);i--){if(dv.getUint32(i,true)===0x06054b50){e=i;break}}
@@ -201,7 +235,7 @@ function zipBad(b){
   return ''}
 async function seal(files,expiry){
   const parts=[];let total=20;
-  for(const f of files){const b=new Uint8Array(await f.arrayBuffer());const m=new TextEncoder().encode(JSON.stringify({n:f.name,t:f.type||''}));parts.push([m,b]);total+=8+m.length+b.length}
+  for(const it of files){const f=it.file,b=new Uint8Array(await f.arrayBuffer());const m=new TextEncoder().encode(JSON.stringify({n:it.path,t:f.type||''}));parts.push([m,b]);total+=8+m.length+b.length}
   const plain=new Uint8Array(total),dv=new DataView(plain.buffer);let o=0;
   dv.setFloat64(0,expiry||0);dv.setFloat64(8,Date.now());o=16;dv.setUint32(o,parts.length);o+=4;
   for(const[m,b]of parts){dv.setUint32(o,m.length);o+=4;plain.set(m,o);o+=m.length;dv.setUint32(o,b.length);o+=4;plain.set(b,o);o+=b.length}
@@ -220,8 +254,8 @@ async function unseal(file,keyStr){
   let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'decrypt'),ct))}catch(e){throw new Error('bad')}
   const dv=new DataView(plain.buffer,plain.byteOffset,plain.length),dec=new TextDecoder();
   const exp=dv.getFloat64(0);if(exp&&Date.now()>exp)throw new Error('expired');
-  const sent=dv.getFloat64(8);let o=16;const n=dv.getUint32(o);o+=4;if(n>1000)throw new Error('bad');const out=[];
-  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;if(o+ml+4>plain.length)throw new Error('bad');const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;if(o+bl>plain.length)throw new Error('bad');const name=clean(meta.n),bytes=plain.slice(o,o+bl);out.push({name,risky:isRisky(name)||(extOf(name)==='zip'&&!!zipBad(bytes)),type:meta.t||'application/octet-stream',bytes});o+=bl}
+  const sent=dv.getFloat64(8);let o=16;const n=dv.getUint32(o);o+=4;if(n>5000)throw new Error('bad');const out=[];
+  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;if(o+ml+4>plain.length)throw new Error('bad');const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;if(o+bl>plain.length)throw new Error('bad');const name=cleanPath(meta.n),bytes=plain.slice(o,o+bl);out.push({name,risky:isRisky(name)||(extOf(name.split('/').pop())==='zip'&&!!zipBad(bytes)),type:meta.t||'application/octet-stream',bytes});o+=bl}
   return{files:out,sent,exp};
 }
 const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
@@ -247,9 +281,10 @@ function zipStore(files){
 const $=id=>document.getElementById(id);
 const fmt=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const lw=$('lw');
+const nf=n=>n+(n===1?' file':' files');
+const lw=$('lw'),JUNK=/^(\.DS_Store|Thumbs\.db|desktop\.ini|\._.*)$/i,MAXN=5000;
 let zipName='',days=7,staged=[],lockedBlob=null,lockedName='',keyText='',f2file=null,outFiles=[];
-const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',ICO_DL='<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>';
+const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',ICO_DL='<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>',ICO_F='<svg class="fi" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>';
 
 // tabs
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
@@ -257,12 +292,51 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
   lw.classList.toggle('shut',i===0&&!!lockedBlob)});
 
+// rows + grouping (a folder shows as one row)
+function mkRow(name,small,o={}){
+  const r=document.createElement('div');r.className='item'+(o.bad?' bad':'');
+  const n=document.createElement('span');n.className='n';
+  if(o.folder)n.insertAdjacentHTML('afterbegin',ICO_F);
+  n.appendChild(document.createTextNode(name));
+  const sz=document.createElement('small');sz.textContent=small;if(o.warn)sz.className='w';
+  r.append(n,sz);return r}
+function mkBtn(label,html,fn){const b=document.createElement('button');b.className='ib';b.type='button';b.setAttribute('aria-label',label);b.innerHTML=html;b.onclick=fn;return b}
+function groupBy(items,key){
+  const out=[],idx=new Map();
+  for(const it of items){const p=key(it),i=p.indexOf('/');
+    if(i<0){out.push({folder:null,items:[it]});continue}
+    const r=p.slice(0,i);if(!idx.has(r)){idx.set(r,out.length);out.push({folder:r,items:[]})}
+    out[idx.get(r)].items.push(it)}
+  return out}
+
+// reading dropped folders
+function entFile(en){return new Promise((res,rej)=>en.file(res,rej))}
+function readAll(rd){return new Promise((res,rej)=>{const all=[];(function next(){rd.readEntries(b=>{if(!b.length)return res(all);all.push(...b);next()},rej)})()})}
+async function walk(en,pre,out){
+  if(en.isFile){const f=await entFile(en);out.push({file:f,path:pre+en.name})}
+  else if(en.isDirectory){for(const k of await readAll(en.createReader()))await walk(k,pre+en.name+'/',out)}}
+async function fromDrop(dt){
+  const ents=[...(dt.items||[])].filter(i=>i.kind==='file').map(i=>i.webkitGetAsEntry&&i.webkitGetAsEntry());
+  if(!ents.length||ents.some(x=>!x))return[...dt.files].map(f=>({file:f,path:f.name}));
+  const out=[];for(const en of ents)await walk(en,'',out);return out}
+
 // drag/drop
-for(const id of['drop1','drop2']){const d=$(id);
-  ['dragenter','dragover'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.add('over')}));
-  ['dragleave','drop'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.remove('over')}));
-  d.addEventListener('drop',e=>{const fs=[...e.dataTransfer.files];if(fs.length)id==='drop1'?stage(fs):pick2(fs[0])})}
-for(const id of['f1','f1b'])$(id).addEventListener('change',e=>{const fs=[...e.target.files];if(fs.length)stage(fs);e.target.value=''});
+window.addEventListener('dragover',e=>e.preventDefault());
+window.addEventListener('drop',e=>e.preventDefault());
+function wire(zone,hl,onDrop){
+  ['dragenter','dragover'].forEach(t=>zone.addEventListener(t,e=>{e.preventDefault();hl.classList.add('over')}));
+  ['dragleave','drop'].forEach(t=>zone.addEventListener(t,e=>{e.preventDefault();hl.classList.remove('over')}));
+  zone.addEventListener('drop',e=>onDrop(e.dataTransfer))}
+wire($('lockView'),$('drop1'),async dt=>{
+  if(!$('result').hidden)return;
+  let es;try{es=await fromDrop(dt)}catch(e){err1('Couldn’t read that folder');return}
+  if(es.length)stage(es)});
+wire($('drop2'),$('drop2'),dt=>{const f=dt.files[0];if(f)pick2(f)});
+
+for(const id of['pickFiles','addFiles'])$(id).onclick=()=>$('f1').click();
+for(const id of['pickDir','addDir'])$(id).onclick=()=>$('f1d').click();
+$('f1').addEventListener('change',e=>{const fs=[...e.target.files];e.target.value='';if(fs.length)stage(fs.map(f=>({file:f,path:f.name})))});
+$('f1d').addEventListener('change',e=>{const fs=[...e.target.files];e.target.value='';if(fs.length)stage(fs.map(f=>({file:f,path:f.webkitRelativePath||f.name})))});
 $('f2').addEventListener('change',e=>{const f=e.target.files[0];if(f)pick2(f);e.target.value=''});
 
 function blobOf(b,t){return new Blob([b],{type:t||'application/octet-stream'})}
@@ -270,52 +344,86 @@ function save(blob,name){const u=URL.createObjectURL(blob),a=document.createElem
 function mk(blob,name){return new File([blob],name,{type:blob.type})}
 function canShare(fs){try{return !!(navigator.canShare&&navigator.canShare({files:fs}))}catch(e){return false}}
 async function share(fs){try{await navigator.share({files:fs})}catch(e){}}
+function err1(m){$('err1').textContent=m;$('err1').hidden=false}
+
+// expiry: 1-30 days
+const dRange=$('dRange');
+function setDays(n){
+  n=Math.min(30,Math.max(1,Math.round(+n)||7));days=n;dRange.value=n;
+  dRange.style.setProperty('--p',((n-1)/29*100)+'%');
+  $('dnum').textContent=n;$('dunit').textContent=n===1?'day':'days';
+  $('expDate').textContent=dstr(Date.now()+n*864e5)}
+dRange.addEventListener('input',()=>setDays(dRange.value));
+$('dm').onclick=()=>setDays(days-1);
+$('dp').onclick=()=>setDays(days+1);
+setDays(7);
 
 // LOCK: stage files
-$('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;days=+b.dataset.d;[...$('chips').children].forEach(c=>c.setAttribute('aria-pressed',c===b))});
-async function stage(fs){
+async function stage(es){
   $('err1').hidden=true;
-  const bad=fs.find(f=>isRisky(f.name));
-  if(bad){$('err1').textContent='Can’t lock .'+extOf(bad.name)+' files — they can carry malware';$('err1').hidden=false;return}
-  for(const f of fs){if(extOf(f.name)==='zip'){const why=zipBad(new Uint8Array(await f.arrayBuffer()));if(why){$('err1').textContent='Can’t lock '+f.name+' — '+why;$('err1').hidden=false;return}}}
-  const total=staged.reduce((a,f)=>a+f.size,0)+fs.reduce((a,f)=>a+f.size,0);
-  if(total>MAX){$('err1').textContent='Too big (50 MB max)';$('err1').hidden=false;return}
-  staged.push(...fs);renderStaged();
+  es=es.map(x=>({file:x.file,path:cleanPath(x.path)})).filter(x=>{const p=x.path.split('/');return !p.includes('__MACOSX')&&!JUNK.test(p[p.length-1])});
+  if(!es.length){err1('Nothing to lock there');return}
+  for(const x of es){const e=riskyExt(x.path);if(e){err1('Can’t lock “'+x.path.split('/').pop()+'” — .'+e+' files can carry malware');return}}
+  for(const x of es){if(extOf(x.path.split('/').pop())==='zip'){const why=zipBad(new Uint8Array(await x.file.arrayBuffer()));if(why){err1('Can’t lock '+x.path.split('/').pop()+' — '+why);return}}}
+  let next=staged.slice();const taken=new Set(next.map(x=>x.path));
+  for(const x of es){
+    let p=x.path;
+    if(taken.has(p)){
+      if(p.includes('/'))next=next.filter(s=>s.path!==p);
+      else{const m=/^(.*?)(\.[^.]*)?$/.exec(p);let i=2,q;do{q=m[1]+' ('+i+')'+(m[2]||'');i++}while(taken.has(q));p=q}}
+    taken.add(p);next.push({file:x.file,path:p})}
+  if(next.length>MAXN){err1('Too many files ('+MAXN.toLocaleString()+' max)');return}
+  if(next.reduce((a,x)=>a+x.file.size,0)>MAX){err1('Too big (50 MB max)');return}
+  staged=next;renderStaged();
 }
 function renderStaged(){
   const L=$('list1');L.textContent='';
-  staged.forEach((f,i)=>{const r=document.createElement('div');r.className='item';
-    const n=document.createElement('span');n.className='n';n.textContent=f.name;
-    const sz=document.createElement('small');sz.textContent=fmt(f.size);
-    const x=document.createElement('button');x.className='ib';x.setAttribute('aria-label','Remove');x.innerHTML=ICO_X;
-    x.onclick=()=>{staged.splice(i,1);renderStaged()};
-    r.append(n,sz,x);L.appendChild(r)});
+  for(const g of groupBy(staged,x=>x.path)){
+    const sz=g.items.reduce((a,x)=>a+x.file.size,0);
+    const r=g.folder?mkRow(g.folder+'/',nf(g.items.length)+' · '+fmt(sz),{folder:1}):mkRow(g.items[0].path,fmt(sz));
+    r.appendChild(mkBtn('Remove',ICO_X,()=>{staged=staged.filter(x=>!g.items.includes(x));renderStaged()}));
+    L.appendChild(r)}
   const has=staged.length>0;
   $('drop1').hidden=has;$('staged').hidden=!has;
-  const t=staged.reduce((a,f)=>a+f.size,0);
-  $('sum1').textContent=has?(staged.length+(staged.length===1?' file · ':' files · ')+fmt(t)+(t>WARN?' · big for email':'')):'';
+  const t=staged.reduce((a,x)=>a+x.file.size,0);
+  $('sum1').textContent=has?(nf(staged.length)+' · '+fmt(t)+(t>WARN?' · big for email':'')):'';
   $('sum1').classList.toggle('warn',t>WARN);
+  if(has)setDays(days);
 }
 $('lock').onclick=async()=>{
   if(!staged.length)return;$('err1').hidden=true;lw.classList.add('busy');$('lock').disabled=true;
   try{
-    const[r]=await Promise.all([seal(staged,Date.now()+days*864e5),sleep(900)]);
-    const now=Date.now();
-    lockedName=fname(now);$('meta1').textContent=lockedName+'\nExpires '+dstr(now+days*864e5);lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
+    const exp=Date.now()+days*864e5;
+    const[r]=await Promise.all([seal(staged,exp),sleep(900)]);
+    lockedName=fname(Date.now());$('meta1').textContent=lockedName+'\nExpires '+dstr(exp);lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
     const k=$('key');k.textContent='';
     keyText.split('-').forEach((g,i)=>{const b=document.createElement('b');b.textContent=g;b.style.animationDelay=(i*70)+'ms';k.appendChild(b)});
     lw.classList.remove('busy');lw.classList.add('shut','pop');setTimeout(()=>lw.classList.remove('pop'),700);
     $('staged').hidden=true;$('result').hidden=false;$('share').hidden=!canShare([mk(lockedBlob,lockedName)]);
     staged=[];
-  }catch(e){lw.classList.remove('busy');$('err1').textContent='Couldn’t lock these files';$('err1').hidden=false}
+  }catch(e){lw.classList.remove('busy');err1('Couldn’t lock these files')}
   $('lock').disabled=false;
 };
 $('save').onclick=()=>save(lockedBlob,lockedName);
 $('share').onclick=()=>share([mk(lockedBlob,lockedName)]);
+
+// copy key — execCommand first (works inside iframes / without clipboard permission), Clipboard API as backup
+function legacyCopy(text){
+  const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');
+  t.style.cssText='position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px';
+  document.body.appendChild(t);let ok=false;
+  try{
+    const r=document.createRange();r.selectNodeContents(t);const s=getSelection();s.removeAllRanges();s.addRange(r);
+    t.focus({preventScroll:true});t.select();t.setSelectionRange(0,text.length);
+    ok=document.execCommand('copy')
+  }catch(e){}
+  t.remove();return ok}
 $('copy').onclick=async()=>{
-  try{await navigator.clipboard.writeText(keyText);$('copyTxt').textContent='Copied'}
-  catch(e){const r=document.createRange();r.selectNodeContents($('key'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copyTxt').textContent='Selected — tap Copy'}
-  setTimeout(()=>$('copyTxt').textContent='Copy key',2200)};
+  let ok=legacyCopy(keyText);
+  if(!ok){try{await navigator.clipboard.writeText(keyText);ok=true}catch(e){}}
+  if(!ok){const r=document.createRange();r.selectNodeContents($('key'));const s=getSelection();s.removeAllRanges();s.addRange(r)}
+  $('copyTxt').textContent=ok?'Copied':'Press and hold the key to copy';
+  setTimeout(()=>$('copyTxt').textContent='Copy key',ok?2200:3500)};
 $('again').onclick=()=>{lockedBlob=null;keyText='';staged=[];$('key').textContent='';$('result').hidden=true;renderStaged();lw.classList.remove('shut');try{navigator.clipboard.writeText('')}catch(e){}};
 
 // UNLOCK
@@ -329,20 +437,26 @@ $('go').onclick=async()=>{
     outFiles=r.files.map(f=>({name:f.name,risky:f.risky,bytes:f.bytes,blob:blobOf(f.bytes,f.type)}));zipName=fname(r.sent).replace(/\.sdoc$/,'.zip');
     $('meta2').textContent='Sent safely '+dstr(r.sent)+(r.exp?'\nExpires '+dstr(r.exp):'');
     const L=$('list2');L.textContent='';
-    outFiles.forEach(f=>{const row=document.createElement('div');row.className='item';
-      const n=document.createElement('span');n.className='n';n.textContent=f.name;
-      const sz=document.createElement('small');sz.textContent=fmt(f.blob.size);
-      if(f.risky){row.classList.add('bad');sz.textContent='Blocked';row.append(n,sz)}
-      else{const b=document.createElement('button');b.className='ib';b.setAttribute('aria-label','Save');b.innerHTML=ICO_DL;b.onclick=()=>save(f.blob,f.name);row.append(n,sz,b)}
-      L.appendChild(row)});
+    for(const g of groupBy(outFiles,x=>x.name)){
+      if(g.folder){
+        const safe=g.items.filter(f=>!f.risky),blocked=g.items.length-safe.length;
+        const row=mkRow(g.folder+'/',(safe.length?nf(safe.length)+' · '+fmt(safe.reduce((a,f)=>a+f.bytes.length,0)):'')+(blocked?(safe.length?' · ':'')+blocked+' blocked':''),{folder:1,bad:!safe.length,warn:blocked>0&&safe.length>0});
+        if(safe.length)row.appendChild(mkBtn('Save folder',ICO_DL,()=>save(zipStore(safe),clean(g.folder)+'.zip')));
+        L.appendChild(row)}
+      else{
+        const f=g.items[0];
+        if(f.risky)L.appendChild(mkRow(f.name,'Blocked',{bad:1}));
+        else{const row=mkRow(f.name,fmt(f.blob.size));row.appendChild(mkBtn('Save',ICO_DL,()=>save(f.blob,f.name)));L.appendChild(row)}}}
     lw.classList.remove('busy','shut');lw.classList.add('pop');setTimeout(()=>lw.classList.remove('pop'),700);
     $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;
-    const safe=outFiles.filter(f=>!f.risky);$('saveAll').hidden=safe.length<2;$('share2').hidden=!safe.length||!canShare(safe.map(f=>mk(f.blob,f.name)));
+    const safe=outFiles.filter(f=>!f.risky),hasDir=safe.some(f=>f.name.includes('/'));
+    $('saveAll').hidden=safe.length<2;
+    $('share2').hidden=!safe.length||!canShare(hasDir?[new File([''],'a.zip',{type:'application/zip'})]:safe.map(f=>mk(f.blob,f.name)));
     $('k2').value='';
   }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent=e.message==='expired'?'Expired — ask for a new file':'Wrong key or damaged file';x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
 };
 $('saveAll').onclick=()=>save(zipStore(outFiles.filter(f=>!f.risky)),zipName);
-$('share2').onclick=()=>share(outFiles.filter(f=>!f.risky).map(f=>mk(f.blob,f.name)));
+$('share2').onclick=()=>{const safe=outFiles.filter(f=>!f.risky);share(safe.some(f=>f.name.includes('/'))?[mk(zipStore(safe),zipName)]:safe.map(f=>mk(f.blob,f.name)))};
 $('again2').onclick=()=>{outFiles=[];f2file=null;$('list2').textContent='';$('opened').hidden=true;$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose .sdoc file';$('dropSub2').textContent='';$('k2').value='';chk()};
 </script>
 </body>
