@@ -116,11 +116,56 @@ textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,173,120,.1
 textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 .err{color:var(--bad);font-weight:500;font-size:14px;animation:shake .4s}
 @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
-.done{display:flex;align-items:center;gap:12px;font:500 21px var(--serif);letter-spacing:.01em}
+.done{display:flex;align-items:center;justify-content:center;gap:12px;font:500 21px var(--serif);letter-spacing:.01em}
 .done .tick{width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);background:rgba(200,173,120,.1);display:grid;place-items:center;flex:none;animation:pop .7s var(--ease)}
 .done .tick svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .foot{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#64635f;display:flex;align-items:center;gap:9px}
 .foot::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.8}
+/* note: always one line on phones */
+.note{white-space:nowrap;justify-content:center;letter-spacing:0;font-size:min(13px,calc((100vw - 82px)/24.2))}
+@media (max-width:399px){.note svg{display:none}}
+@media (max-width:339px){.note{white-space:normal;text-align:center;font-size:12px}}
+.note{white-space:nowrap;font-size:clamp(10px,calc((100vw - 84px)/24.5),13px)}
+@media (max-width:399px){.note svg{display:none}}
+/* keyboard focus (all sizes) */
+button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.tabs button:focus-visible{outline-offset:-3px}
+.drop:has(input:focus-visible){border-color:var(--gold);color:var(--ink)}
+/* desktop */
+@media (min-width:820px){
+  body{padding-top:48px;padding-bottom:48px}
+  main{max-width:600px;gap:30px}
+  .hero{gap:20px}
+  .lockwrap{width:112px;height:112px}
+  .lockwrap::after{inset:-34px}
+  .lock{width:64px;height:64px}
+  h1{font-size:44px}
+  h1 .tk{width:38px;height:38px;margin-left:16px}
+  h1 .tk svg{width:20px;height:20px}
+  .tabs{width:360px}
+  .tabs button{font-size:13px;padding:13px 0}
+  .tabs button[aria-selected=false]:hover{color:var(--ink)}
+  .card{padding:32px;gap:22px;border-radius:24px}
+  .drop{min-height:260px;font-size:17px;gap:16px}
+  .drop svg{width:38px;height:38px}
+  .drop.has{min-height:130px}
+  .btns{max-width:360px}
+  .btn{padding:16px 22px}
+  .btn.pri:hover{background:#fff}
+  .item{padding:12px 12px 12px 18px}
+  .item:hover{border-color:var(--line2)}
+  .item small{font-size:14px}
+  .ib{width:38px;height:38px}
+  .ib.lg{width:46px;height:46px}
+  .dval b{font-size:46px}
+  .key{flex-wrap:nowrap;gap:10px}
+  .key b{flex:1;text-align:center;font-size:22px;padding:14px 0;letter-spacing:.12em}
+  textarea{min-height:104px;font-size:17px;text-align:center;padding:18px}
+  .label{font-size:12px}
+  .sum{font-size:14px}
+  .note{font-size:14px}
+}
+@media (min-width:1280px){main{max-width:640px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -175,7 +220,7 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
     </div>
     <div id="result" hidden>
       <div style="display:flex;flex-direction:column;gap:14px">
-        <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Locked</div>
+        <div class="done">Locked</div>
         <div class="sum" id="meta1" style="margin-top:-8px;white-space:pre-line"></div>
         <div class="row" id="saveRow">
           <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save file</button>
@@ -201,7 +246,7 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
     <div class="err" id="err2" hidden></div>
     <button class="btn pri" id="go" disabled><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>Unlock</button>
     <div id="opened" hidden style="display:flex;flex-direction:column;gap:12px">
-      <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Unlocked</div>
+      <div class="done">Unlocked</div>
       <div class="sum" id="meta2" style="margin-top:-6px;white-space:pre-line"></div>
       <div class="list" id="list2"></div>
       <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>After saving, delete the locked file and the key.</div>
@@ -451,12 +496,13 @@ function pick2(f){f2file=f;$('drop2').classList.add('has');$('dropTxt2').textCon
   f.slice(0,MAGIC.length+2).arrayBuffer().then(b=>{const u=new Uint8Array(b);if(f2file!==f)return;const ok=u.length===MAGIC.length+2&&MAGIC.every((x,i)=>u[i]===x);$('dropSub2').textContent=fmt(f.size)+(ok?' · File '+fidOf(u,MAGIC.length):' · not a Send Safe file')}).catch(()=>{})}
 function chk(){$('go').disabled=!(f2file&&$('k2').value.trim().length>=20)}
 $('k2').addEventListener('input',chk);
+$('k2').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!$('go').disabled)$('go').click()}});
 $('go').onclick=async()=>{
   $('err2').hidden=true;lw.classList.add('busy');
   try{
     const[r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
     outFiles=r.files.map(f=>({name:f.name,risky:f.risky,bytes:f.bytes,blob:blobOf(f.bytes,f.type)}));zipName=fname(r.sent,r.id).replace(/\.dat$/,'.zip');
-    $('meta2').textContent=dstr(r.sent)+(r.exp?' · Expires '+dstr(r.exp):'');
+    $('meta2').textContent=r.exp?'Expires '+dstr(r.exp):'';
     const L=$('list2');L.textContent='';
     for(const g of groupBy(outFiles,x=>x.name)){
       if(g.folder){
