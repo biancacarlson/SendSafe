@@ -34,19 +34,19 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lockwrap.shut{border-color:rgba(200,173,120,.38)}
 .lockwrap.swap{animation:swapRing .95s var(--ease)}
 .lockwrap.swap .lock{animation:swapTilt .8s var(--ease)}
-@keyframes swapRing{0%{box-shadow:0 0 0 0 rgba(200,173,120,.42)}100%{box-shadow:0 0 0 30px rgba(200,173,120,0)}}
-@keyframes swapTilt{0%{transform:none}30%{transform:scale(.8)}65%{transform:scale(1.14)}100%{transform:none}}
+@keyframes swapRing{0%{box-shadow:0 0 0 0 rgba(200,173,120,.25)}100%{box-shadow:0 0 0 20px rgba(200,173,120,0)}}
+@keyframes swapTilt{0%{transform:none}30%{transform:scale(.9)}65%{transform:scale(1.07)}100%{transform:none}}
 
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
 h1.sent{color:var(--gold)}
 h1{transition:color .7s var(--ease)}
-#tw .ch{display:inline-grid;width:var(--wa,auto);transition:width .6s var(--ease)}
-h1.sent #tw .ch{width:var(--wb,auto)}
-#tw .ch>span{grid-area:1/1;justify-self:start;transition:opacity .55s var(--ease),transform .65s var(--ease)}
-#tw .ch .b{opacity:0;transform:translateY(.45em)}
-h1.sent #tw .ch .a{opacity:0;transform:translateY(-.45em)}
-h1.sent #tw .ch .b{opacity:1;transform:none}
+#tw .ch{display:inline-grid;width:var(--wa,auto);transition:width .45s var(--ease)}
+h1.sentw #tw .ch{width:var(--wb,auto)}
+#tw .ch>span{grid-area:1/1;justify-self:start;transition:opacity .4s var(--ease),transform .45s var(--ease)}
+#tw .ch .b{opacity:0;transform:translateY(.3em)}
+h1.sentw #tw .ch .a{opacity:0;transform:translateY(-.3em)}
+h1.sentw #tw .ch .b{opacity:1;transform:none}
 h1 .tk{display:inline-grid;place-items:center;width:30px;height:30px;margin-left:12px;border-radius:50%;background:var(--gold);vertical-align:.06em;animation:tkPop .8s var(--ease) both,ring 1.1s .15s ease-out}
 h1 .tk svg{width:16px;height:16px;stroke:var(--bg);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:24;stroke-dashoffset:24;animation:draw .45s .25s ease-out forwards}
 @keyframes tkPop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
@@ -375,7 +375,7 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
   if(String(i)===$('tabs').dataset.t)return;
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
-  lw.classList.toggle('shut',i===0);syncTitle();swapFx()});
+  lw.classList.toggle('shut',i===0);$('tw').parentNode.classList.toggle('sentw',i===1);syncTitle();swapFx()});
 function fitCh(){const c=document.querySelector('#tw .ch');if(!c)return;c.style.setProperty('--wa',c.querySelector('.a').getBoundingClientRect().width+'px');c.style.setProperty('--wb',c.querySelector('.b').getBoundingClientRect().width+'px')}
 fitCh();addEventListener('load',fitCh);addEventListener('resize',fitCh);
 let seen=false;
@@ -383,7 +383,7 @@ function syncTitle(){
   if($('opened').hidden)seen=false;
   const on=!$('opened').hidden&&$('tabs').dataset.t==='1',t=$('tw').parentNode,was=t.classList.contains('sent'),first=on&&!seen;
   t.classList.toggle('still',on&&seen);
-  t.setAttribute('aria-label',on?'Sent Safe':'Send Safe');$('tk').hidden=!on;t.classList.toggle('sent',on);lw.classList.toggle('ok',on);
+  t.setAttribute('aria-label',$('tabs').dataset.t==='1'?'Sent Safe':'Send Safe');$('tk').hidden=!on;t.classList.toggle('sent',on);lw.classList.toggle('ok',on);
   if(on)seen=true;
   if(first&&!was){window.scrollTo({top:0,behavior:'smooth'});lw.classList.remove('burst');void lw.offsetWidth;lw.classList.add('burst');setTimeout(()=>lw.classList.remove('burst'),1000)}}
 
