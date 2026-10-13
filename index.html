@@ -57,12 +57,18 @@ h1{margin:0;font-size:28px;font-weight:750;letter-spacing:-.02em;background:line
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
 .label button{all:unset;cursor:pointer;color:var(--b);text-transform:none;letter-spacing:0;font-size:14px}
-.key{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;cursor:pointer;-webkit-user-select:none;user-select:none}
-.key b{font:700 15px ui-monospace,"SF Mono",Menlo,monospace;text-align:center;padding:10px 0;border-radius:11px;background:rgba(255,255,255,.07);border:1px solid var(--line);letter-spacing:.06em;transition:filter .35s,opacity .35s;filter:blur(7px);opacity:.8;animation:chip .5s cubic-bezier(.2,.9,.3,1) both}
-.key.show b{filter:none;opacity:1}
+.key{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.key b{font:700 21px ui-monospace,"SF Mono",Menlo,monospace;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.08);border:1px solid var(--line);letter-spacing:.08em;animation:chip .5s cubic-bezier(.2,.9,.3,1) both}
 @keyframes chip{from{opacity:0;transform:translateY(8px) scale(.9)}}
-.key::after{content:"Tap to reveal";position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:14px;color:#fff;text-shadow:0 2px 14px #000;transition:opacity .3s;pointer-events:none}
-.key.show::after{opacity:0}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--line);animation:rise .35s cubic-bezier(.2,.9,.3,1) both}
+.item .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.item small{color:var(--dim);white-space:nowrap}
+.ib{all:unset;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);flex:none}
+.ib:active{transform:scale(.92)}
+.ib svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sum{font-size:13.5px;color:var(--dim);text-align:center}
+.sum.warn{color:#ffc46b}
 .note{font-size:13.5px;color:var(--dim);display:flex;gap:8px;align-items:center}
 .note svg{width:16px;height:16px;stroke:var(--b);fill:none;stroke-width:2;flex:none}
 textarea{width:100%;min-height:92px;resize:none;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.28);color:#fff;font:600 15px ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;padding:14px;outline:none;transition:border-color .25s,box-shadow .25s}
@@ -103,19 +109,28 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
   <section class="card" id="lockView">
     <label class="drop" id="drop1">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-      <span id="dropTxt1">Choose file</span><small id="dropSub1"></small>
-      <input type="file" id="f1">
+      <span>Choose files</span>
+      <input type="file" id="f1" multiple>
     </label>
+    <div id="staged" hidden style="display:flex;flex-direction:column;gap:12px">
+      <div class="list" id="list1"></div>
+      <div class="sum" id="sum1"></div>
+      <div class="row">
+        <label class="btn sec" style="position:relative;cursor:pointer"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add<input type="file" id="f1b" multiple style="position:absolute;inset:0;opacity:0;font-size:0;width:100%;height:100%;cursor:pointer"></label>
+        <button class="btn pri" id="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button>
+      </div>
+    </div>
     <div id="result" hidden>
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Locked</div>
         <div class="row" id="saveRow">
-          <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save</button>
+          <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save file</button>
           <button class="btn sec" id="share" hidden><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4-4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>Share</button>
         </div>
-        <div class="label"><span>Key</span><button id="copy">Copy</button></div>
+        <div class="label"><span>Your key</span></div>
         <div class="key" id="key"></div>
-        <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>Send the key another way.</div>
+        <button class="btn pri" id="copy"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span id="copyTxt">Copy key</span></button>
+        <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>Send the key by text or call. Not in the email.</div>
         <button class="btn sec" id="again">Done</button>
       </div>
     </div>
@@ -126,15 +141,16 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
   <section class="card" id="openView" hidden>
     <label class="drop" id="drop2">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-      <span id="dropTxt2">Choose .sdoc</span><small id="dropSub2"></small>
+      <span id="dropTxt2">Choose .sdoc file</span><small id="dropSub2"></small>
       <input type="file" id="f2">
     </label>
     <textarea id="k2" placeholder="Paste key" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false"></textarea>
     <div class="err" id="err2" hidden></div>
     <button class="btn pri" id="go" disabled><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>Unlock</button>
     <div id="opened" hidden style="display:flex;flex-direction:column;gap:12px">
-      <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span id="oname" style="word-break:break-all"></span></div>
-      <div class="row"><button class="btn pri" id="save2"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save</button><button class="btn sec" id="share2" hidden>Share</button></div>
+      <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Unlocked</div>
+      <div class="list" id="list2"></div>
+      <button class="btn pri" id="share2" hidden>Share all</button>
       <button class="btn sec" id="again2">Done</button>
     </div>
   </section>
@@ -144,43 +160,44 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
 
 <script>
 //CRYPTO-START
-const MAGIC=new TextEncoder().encode('SSAFE1'),B32='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',MAX=50*1024*1024;
-function b32enc(a){let bits=0,val=0,o='';for(const x of a){val=(val<<8)|x;bits+=8;while(bits>=5){o+=B32[(val>>>(bits-5))&31];bits-=5}val&=(1<<bits)-1}if(bits)o+=B32[(val<<(5-bits))&31];return o}
-function b32dec(s){let bits=0,val=0;const o=[];for(const c of s){const i=B32.indexOf(c);if(i<0)throw new Error('k');val=(val<<5)|i;bits+=5;if(bits>=8){o.push((val>>>(bits-8))&255);bits-=8;val&=(1<<bits)-1}}return new Uint8Array(o)}
+const MAGIC=new TextEncoder().encode('SSAFE2'),ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',MAX=50*1024*1024,WARN=20*1024*1024;
+function newKey(){const r=crypto.getRandomValues(new Uint8Array(25));let s='';for(const x of r)s+=ALPHA[x&31];return s}
+function showKey(s){return s.match(/.{1,5}/g).join('-')}
+function normKey(s){return String(s).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/[1I]/g,'L')}
+async function aes(k,use){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(k));return crypto.subtle.importKey('raw',h,'AES-GCM',false,[use])}
 function clean(n){return String(n||'file').replace(/[\\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,120)||'file'}
-async function seal(file){
-  const body=new Uint8Array(await file.arrayBuffer());
-  const meta=new TextEncoder().encode(JSON.stringify({n:file.name,t:file.type||''}));
-  const plain=new Uint8Array(4+meta.length+body.length);
-  new DataView(plain.buffer).setUint32(0,meta.length);plain.set(meta,4);plain.set(body,4+meta.length);
-  const raw=crypto.getRandomValues(new Uint8Array(32)),iv=crypto.getRandomValues(new Uint8Array(12));
-  const key=await crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt']);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:MAGIC},key,plain));
+async function seal(files){
+  const parts=[];let total=4;
+  for(const f of files){const b=new Uint8Array(await f.arrayBuffer());const m=new TextEncoder().encode(JSON.stringify({n:f.name,t:f.type||''}));parts.push([m,b]);total+=8+m.length+b.length}
+  const plain=new Uint8Array(total),dv=new DataView(plain.buffer);let o=0;
+  dv.setUint32(o,parts.length);o+=4;
+  for(const[m,b]of parts){dv.setUint32(o,m.length);o+=4;plain.set(m,o);o+=m.length;dv.setUint32(o,b.length);o+=4;plain.set(b,o);o+=b.length}
+  const k=newKey(),iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'encrypt'),plain));
   const out=new Uint8Array(MAGIC.length+12+ct.length);out.set(MAGIC);out.set(iv,MAGIC.length);out.set(ct,MAGIC.length+12);
-  const k=b32enc(raw);raw.fill(0);plain.fill(0);
+  plain.fill(0);
   return{bytes:out,key:k};
 }
 async function unseal(file,keyStr){
-  const norm=String(keyStr).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/0/g,'O').replace(/1/g,'I');
-  let raw;try{raw=b32dec(norm)}catch(e){throw new Error('bad')}
-  if(raw.length!==32)throw new Error('bad');
+  const k=normKey(keyStr);if(k.length!==25)throw new Error('bad');
   const d=new Uint8Array(await file.arrayBuffer());
   if(d.length<MAGIC.length+12+16)throw new Error('bad');
   for(let i=0;i<MAGIC.length;i++)if(d[i]!==MAGIC[i])throw new Error('bad');
   const iv=d.slice(MAGIC.length,MAGIC.length+12),ct=d.slice(MAGIC.length+12);
-  const key=await crypto.subtle.importKey('raw',raw,'AES-GCM',false,['decrypt']);
-  let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},key,ct))}catch(e){throw new Error('bad')}
-  const ml=new DataView(plain.buffer,plain.byteOffset).getUint32(0);
-  const meta=JSON.parse(new TextDecoder().decode(plain.slice(4,4+ml)));
-  return{name:clean(meta.n),type:meta.t||'application/octet-stream',bytes:plain.slice(4+ml)};
+  let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'decrypt'),ct))}catch(e){throw new Error('bad')}
+  const dv=new DataView(plain.buffer,plain.byteOffset,plain.length),dec=new TextDecoder();
+  let o=0;const n=dv.getUint32(o);o+=4;const out=[];
+  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;out.push({name:clean(meta.n),type:meta.t||'application/octet-stream',bytes:plain.slice(o,o+bl)});o+=bl}
+  return out;
 }
 //CRYPTO-END
 
 const $=id=>document.getElementById(id);
 const fmt=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-let lockedBlob=null,lockedName='',keyText='',openBlob=null,openName='',f2file=null;
 const lw=$('lw');
+let staged=[],lockedBlob=null,lockedName='',keyText='',f2file=null,outFiles=[];
+const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',ICO_DL='<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>';
 
 // tabs
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
@@ -192,38 +209,58 @@ $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)
 for(const id of['drop1','drop2']){const d=$(id);
   ['dragenter','dragover'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.add('over')}));
   ['dragleave','drop'].forEach(t=>d.addEventListener(t,e=>{e.preventDefault();d.classList.remove('over')}));
-  d.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)(id==='drop1'?lockFile:pick2)(f)})}
-$('f1').addEventListener('change',e=>{const f=e.target.files[0];if(f)lockFile(f);e.target.value=''});
+  d.addEventListener('drop',e=>{const fs=[...e.dataTransfer.files];if(fs.length)id==='drop1'?stage(fs):pick2(fs[0])})}
+for(const id of['f1','f1b'])$(id).addEventListener('change',e=>{const fs=[...e.target.files];if(fs.length)stage(fs);e.target.value=''});
 $('f2').addEventListener('change',e=>{const f=e.target.files[0];if(f)pick2(f);e.target.value=''});
 
-function bytesToBlob(b,t){return new Blob([b],{type:t||'application/octet-stream'})}
+function blobOf(b,t){return new Blob([b],{type:t||'application/octet-stream'})}
 function save(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
-function canShare(blob,name){try{return !!(navigator.canShare&&navigator.canShare({files:[new File([blob],name,{type:blob.type})]}))}catch(e){return false}}
-async function share(blob,name){try{await navigator.share({files:[new File([blob],name,{type:blob.type})]})}catch(e){}}
+function mk(blob,name){return new File([blob],name,{type:blob.type})}
+function canShare(fs){try{return !!(navigator.canShare&&navigator.canShare({files:fs}))}catch(e){return false}}
+async function share(fs){try{await navigator.share({files:fs})}catch(e){}}
 
-// LOCK
-async function lockFile(f){
+// LOCK: stage files
+function stage(fs){
   $('err1').hidden=true;
-  if(f.size>MAX){$('err1').textContent='Too big (50 MB max)';$('err1').hidden=false;return}
-  const d=$('drop1');d.classList.add('has');$('dropTxt1').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub1').textContent=fmt(f.size);
-  lw.classList.add('busy');
-  try{
-    const [r]=await Promise.all([seal(f),sleep(900)]);
-    const tag=b32enc(crypto.getRandomValues(new Uint8Array(3))).slice(0,4);
-    lockedName='SendSafe-'+tag+'.sdoc';lockedBlob=bytesToBlob(r.bytes);keyText=r.key.match(/.{1,4}/g).join('-');
-    const k=$('key');k.innerHTML='';k.classList.remove('show');
-    r.key.match(/.{1,4}/g).forEach((g,i)=>{const b=document.createElement('b');b.textContent=g;b.style.animationDelay=(i*45)+'ms';k.appendChild(b)});
-    lw.classList.remove('busy');lw.classList.add('shut','pop');setTimeout(()=>lw.classList.remove('pop'),700);
-    $('drop1').hidden=true;$('result').hidden=false;$('share').hidden=!canShare(lockedBlob,lockedName);
-    $('result').firstElementChild.style.animation='rise .5s both';
-  }catch(e){lw.classList.remove('busy');$('err1').textContent='Couldn’t lock this file';$('err1').hidden=false;d.classList.remove('has');$('dropTxt1').textContent='Choose file';$('dropSub1').textContent=''}
+  const total=staged.reduce((a,f)=>a+f.size,0)+fs.reduce((a,f)=>a+f.size,0);
+  if(total>MAX){$('err1').textContent='Too big (50 MB max)';$('err1').hidden=false;return}
+  staged.push(...fs);renderStaged();
 }
+function renderStaged(){
+  const L=$('list1');L.textContent='';
+  staged.forEach((f,i)=>{const r=document.createElement('div');r.className='item';
+    const n=document.createElement('span');n.className='n';n.textContent=f.name;
+    const sz=document.createElement('small');sz.textContent=fmt(f.size);
+    const x=document.createElement('button');x.className='ib';x.setAttribute('aria-label','Remove');x.innerHTML=ICO_X;
+    x.onclick=()=>{staged.splice(i,1);renderStaged()};
+    r.append(n,sz,x);L.appendChild(r)});
+  const has=staged.length>0;
+  $('drop1').hidden=has;$('staged').hidden=!has;
+  const t=staged.reduce((a,f)=>a+f.size,0);
+  $('sum1').textContent=has?(staged.length+(staged.length===1?' file · ':' files · ')+fmt(t)+(t>WARN?' · big for email':'')):'';
+  $('sum1').classList.toggle('warn',t>WARN);
+}
+$('lock').onclick=async()=>{
+  if(!staged.length)return;$('err1').hidden=true;lw.classList.add('busy');$('lock').disabled=true;
+  try{
+    const[r]=await Promise.all([seal(staged),sleep(900)]);
+    const tag=[...crypto.getRandomValues(new Uint8Array(4))].map(x=>ALPHA[x&31]).join('');
+    lockedName='SendSafe-'+tag+'.sdoc';lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
+    const k=$('key');k.textContent='';
+    keyText.split('-').forEach((g,i)=>{const b=document.createElement('b');b.textContent=g;b.style.animationDelay=(i*70)+'ms';k.appendChild(b)});
+    lw.classList.remove('busy');lw.classList.add('shut','pop');setTimeout(()=>lw.classList.remove('pop'),700);
+    $('staged').hidden=true;$('result').hidden=false;$('share').hidden=!canShare([mk(lockedBlob,lockedName)]);
+    staged=[];
+  }catch(e){lw.classList.remove('busy');$('err1').textContent='Couldn’t lock these files';$('err1').hidden=false}
+  $('lock').disabled=false;
+};
 $('save').onclick=()=>save(lockedBlob,lockedName);
-$('share').onclick=()=>share(lockedBlob,lockedName);
-$('key').onclick=()=>$('key').classList.toggle('show');
-$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(keyText);$('copy').textContent='Copied';$('key').classList.add('show')}catch(e){$('key').classList.add('show');$('copy').textContent='Select & copy'}setTimeout(()=>$('copy').textContent='Copy',1800)};
-function resetLock(){lockedBlob=null;keyText='';$('key').innerHTML='';$('result').hidden=true;$('drop1').hidden=false;$('drop1').classList.remove('has');$('dropTxt1').textContent='Choose file';$('dropSub1').textContent='';lw.classList.remove('shut');try{navigator.clipboard.writeText('')}catch(e){}}
-$('again').onclick=resetLock;
+$('share').onclick=()=>share([mk(lockedBlob,lockedName)]);
+$('copy').onclick=async()=>{
+  try{await navigator.clipboard.writeText(keyText);$('copyTxt').textContent='Copied'}
+  catch(e){const r=document.createRange();r.selectNodeContents($('key'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copyTxt').textContent='Selected — tap Copy'}
+  setTimeout(()=>$('copyTxt').textContent='Copy key',2200)};
+$('again').onclick=()=>{lockedBlob=null;keyText='';staged=[];$('key').textContent='';$('result').hidden=true;renderStaged();lw.classList.remove('shut');try{navigator.clipboard.writeText('')}catch(e){}};
 
 // UNLOCK
 function pick2(f){f2file=f;$('drop2').classList.add('has');$('dropTxt2').textContent=f.name.length>30?f.name.slice(0,27)+'…':f.name;$('dropSub2').textContent=fmt(f.size);$('err2').hidden=true;chk()}
@@ -232,19 +269,22 @@ $('k2').addEventListener('input',chk);
 $('go').onclick=async()=>{
   $('err2').hidden=true;lw.classList.add('busy');
   try{
-    const [r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
-    openBlob=bytesToBlob(r.bytes,r.type);openName=r.name;$('oname').textContent=openName;
-    lw.classList.remove('busy');lw.classList.remove('shut');lw.classList.add('pop');setTimeout(()=>lw.classList.remove('pop'),700);
-    $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;$('share2').hidden=!canShare(openBlob,openName);
+    const[r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
+    outFiles=r.map(f=>({name:f.name,blob:blobOf(f.bytes,f.type)}));
+    const L=$('list2');L.textContent='';
+    outFiles.forEach(f=>{const row=document.createElement('div');row.className='item';
+      const n=document.createElement('span');n.className='n';n.textContent=f.name;
+      const sz=document.createElement('small');sz.textContent=fmt(f.blob.size);
+      const b=document.createElement('button');b.className='ib';b.setAttribute('aria-label','Save');b.innerHTML=ICO_DL;b.onclick=()=>save(f.blob,f.name);
+      row.append(n,sz,b);L.appendChild(row)});
+    lw.classList.remove('busy','shut');lw.classList.add('pop');setTimeout(()=>lw.classList.remove('pop'),700);
+    $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;
+    $('share2').hidden=!canShare(outFiles.map(f=>mk(f.blob,f.name)));
     $('k2').value='';
   }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent='Wrong key or damaged file';x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
 };
-$('save2').onclick=()=>save(openBlob,openName);
-$('share2').onclick=()=>share(openBlob,openName);
-$('again2').onclick=()=>{openBlob=null;f2file=null;$('opened').hidden=true;$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose .sdoc';$('dropSub2').textContent='';$('k2').value='';chk()};
-
-// wipe key from screen when app is backgrounded
-document.addEventListener('visibilitychange',()=>{if(document.hidden)$('key').classList.remove('show')});
+$('share2').onclick=()=>share(outFiles.map(f=>mk(f.blob,f.name)));
+$('again2').onclick=()=>{outFiles=[];f2file=null;$('list2').textContent='';$('opened').hidden=true;$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose .sdoc file';$('dropSub2').textContent='';$('k2').value='';chk()};
 </script>
 </body>
 </html>
