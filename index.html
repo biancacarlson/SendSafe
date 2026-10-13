@@ -29,9 +29,13 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lockwrap.shut .lock .st{stroke:var(--gold)}
 .shackle{transform-box:fill-box;transform-origin:0 100%}
 .lock .shackle{transition:transform .55s cubic-bezier(.34,1.35,.5,1),stroke .7s var(--ease)}
-.lockwrap:not(.shut) .shackle{transform:translateY(-2.5px) rotate(-34deg);transition:transform .7s cubic-bezier(.3,1.15,.5,1),stroke .7s var(--ease)}
+.lockwrap:not(.shut) .shackle{transform:translateY(-2.5px) rotate(-34deg);transition:transform .7s cubic-bezier(.3,1.5,.5,1),stroke .7s var(--ease)}
 .lockwrap{transition:border-color .7s var(--ease)}
 .lockwrap.shut{border-color:rgba(200,173,120,.38)}
+.lockwrap.swap{animation:swapRing .95s var(--ease)}
+.lockwrap.swap .lock{animation:swapTilt .8s var(--ease)}
+@keyframes swapRing{0%{box-shadow:0 0 0 0 rgba(200,173,120,.42)}100%{box-shadow:0 0 0 30px rgba(200,173,120,0)}}
+@keyframes swapTilt{0%{transform:none}30%{transform:scale(.8)}65%{transform:scale(1.14)}100%{transform:none}}
 
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
@@ -131,11 +135,9 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
 @media (max-width:339px){.note{white-space:normal;text-align:center;font-size:12px}}
 .note{white-space:nowrap;font-size:clamp(10px,calc((100vw - 84px)/24.5),13px)}
 @media (max-width:399px){.note svg{display:none}}
-.stack{display:grid;width:100%;--sx:10px;overflow-x:clip}
-.stack>.card{grid-area:1/1;transition:opacity .4s ease .08s,transform .5s var(--ease) .08s,visibility 0s .08s}
-.stack>.card[hidden]{display:flex!important;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .22s ease,transform .3s var(--ease),visibility 0s .3s}
-#lockView[hidden]{transform:translateX(calc(var(--sx)*-1))}
-#openView[hidden]{transform:translateX(var(--sx))}
+.stack{display:grid;width:100%}
+.stack>.card{grid-area:1/1;transition:opacity .35s var(--ease),visibility .35s}
+.stack>.card[hidden]{display:flex!important;visibility:hidden;opacity:0;pointer-events:none;}
 
 .stack>.card>.drop{flex:1}
 h1.still #tw,h1.still .tk,h1.still .tk svg{animation:none}
@@ -149,7 +151,6 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
 @media (min-width:820px){
   body{padding-top:48px;padding-bottom:48px}
   main{max-width:600px;gap:30px}
-  .stack{--sx:14px}
   .hero{gap:20px}
   .lockwrap{width:112px;height:112px}
   .lockwrap::after{inset:-34px}
@@ -181,7 +182,9 @@ button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--gold);ou
   .note{font-size:14px}
 }
 @media (min-width:1280px){main{max-width:640px}}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-delay:0s!important;transition-delay:0s!important}.stack>.card{transform:none!important}}
+h1.tpop #tw{display:inline-block;animation:wordPop .6s var(--ease)}
+@keyframes wordPop{0%{transform:none}30%{transform:scale(.88)}65%{transform:scale(1.1)}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-delay:0s!important;transition-delay:0s!important}}
 </style>
 </head>
 <body>
@@ -363,11 +366,14 @@ let zipName='',days=7,staged=[],lockedBlob=null,lockedName='',keyText='',f2file=
 const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',ICO_DL='<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>',ICO_F='<svg class="fi" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>';
 
 // tabs
+function swapFx(){
+  const h=$('tw').parentNode;h.classList.remove('tpop');void h.offsetWidth;h.classList.add('tpop');setTimeout(()=>h.classList.remove('tpop'),650);
+  lw.classList.remove('swap');void lw.offsetWidth;lw.classList.add('swap');setTimeout(()=>lw.classList.remove('swap'),950)}
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i;
   if(String(i)===$('tabs').dataset.t)return;
   $('tabs').dataset.t=i;[...$('tabs').querySelectorAll('button')].forEach((x,j)=>x.setAttribute('aria-selected',j===i));
   $('lockView').hidden=i!==0;$('openView').hidden=i!==1;
-  lw.classList.toggle('shut',i===0);syncTitle()});
+  lw.classList.toggle('shut',i===0);syncTitle();swapFx()});
 let seen=false;
 function syncTitle(){
   if($('opened').hidden)seen=false;
