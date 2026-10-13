@@ -1,4 +1,4 @@
-# Send Safe 🔒
+# Send Safe
 
 Send Safe lets you encrypt and send sensitive files in seconds. Uploaded docs are encrypted entirely in your browser into a secure `.dat` file, with a unique 25-character key generated for each one. Because it is a single-file application with zero external dependencies, your data never touches a server.
 
