@@ -115,7 +115,7 @@ textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
   <section class="card" id="lockView">
     <label class="drop" id="drop1">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-      <span>Choose files</span>
+      <span>Choose files or a zip</span>
       <input type="file" id="f1" multiple>
     </label>
     <div id="staged" hidden style="display:flex;flex-direction:column;gap:12px">
@@ -180,9 +180,25 @@ function showKey(s){return s.match(/.{1,5}/g).join('-')}
 function normKey(s){return String(s).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/[1I]/g,'L')}
 async function aes(k,use){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(k));return crypto.subtle.importKey('raw',h,'AES-GCM',false,[use])}
 function clean(n){return String(n||'file').replace(/[\u202a-\u202e\u2066-\u2069\u200b-\u200f\ufeff]/g,'').replace(/[\\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,120)||'file'}
-const RISKY=new Set('exe msi bat cmd com scr pif js jse mjs vbs vbe wsf wsh ps1 psm1 sh jar apk app dmg pkg iso img lnk reg dll hta cpl msc deb rpm html htm xhtml svg docm xlsm pptm dotm xltm xlam'.split(' '));
+const RISKY=new Set('exe msi bat cmd com scr pif js jse mjs vbs vbe wsf wsh ps1 psm1 sh jar apk app dmg pkg iso img lnk reg dll hta cpl msc deb rpm html htm xhtml svg docm xlsm pptm dotm xltm xlam rar 7z tar gz tgz'.split(' '));
 function extOf(n){const m=/\.([^.]+)$/.exec(String(n).trim());return m?m[1].toLowerCase():''}
 function isRisky(n){return RISKY.has(extOf(clean(n)))}
+function zipNames(b){
+  const dv=new DataView(b.buffer,b.byteOffset,b.length);let e=-1;
+  for(let i=b.length-22;i>=Math.max(0,b.length-65557);i--){if(dv.getUint32(i,true)===0x06054b50){e=i;break}}
+  if(e<0)return null;
+  const n=dv.getUint16(e+10,true);let o=dv.getUint32(e+16,true);const out=[],dec=new TextDecoder();
+  for(let i=0;i<n;i++){if(o+46>b.length||dv.getUint32(o,true)!==0x02014b50)return null;
+    const nl=dv.getUint16(o+28,true),xl=dv.getUint16(o+30,true),cl=dv.getUint16(o+32,true);
+    out.push(dec.decode(b.subarray(o+46,o+46+nl)));o+=46+nl+xl+cl}
+  return out}
+function zipBad(b){
+  const nm=zipNames(b);if(!nm)return 'it can’t be read';
+  for(const n of nm){
+    if(/(^|[\\/])\.\.([\\/]|$)/.test(n)||/^([\\/]|[A-Za-z]:)/.test(n))return 'it has an unsafe file path';
+    if(n.endsWith('/'))continue;
+    const e=extOf(clean(n));if(RISKY.has(e)||e==='zip')return 'it holds a .'+e+' file'}
+  return ''}
 async function seal(files,expiry){
   const parts=[];let total=20;
   for(const f of files){const b=new Uint8Array(await f.arrayBuffer());const m=new TextEncoder().encode(JSON.stringify({n:f.name,t:f.type||''}));parts.push([m,b]);total+=8+m.length+b.length}
@@ -205,7 +221,7 @@ async function unseal(file,keyStr){
   const dv=new DataView(plain.buffer,plain.byteOffset,plain.length),dec=new TextDecoder();
   const exp=dv.getFloat64(0);if(exp&&Date.now()>exp)throw new Error('expired');
   const sent=dv.getFloat64(8);let o=16;const n=dv.getUint32(o);o+=4;if(n>1000)throw new Error('bad');const out=[];
-  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;if(o+ml+4>plain.length)throw new Error('bad');const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;if(o+bl>plain.length)throw new Error('bad');const name=clean(meta.n);out.push({name,risky:isRisky(name),type:meta.t||'application/octet-stream',bytes:plain.slice(o,o+bl)});o+=bl}
+  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;if(o+ml+4>plain.length)throw new Error('bad');const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;if(o+bl>plain.length)throw new Error('bad');const name=clean(meta.n),bytes=plain.slice(o,o+bl);out.push({name,risky:isRisky(name)||(extOf(name)==='zip'&&!!zipBad(bytes)),type:meta.t||'application/octet-stream',bytes});o+=bl}
   return{files:out,sent,exp};
 }
 const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
@@ -257,10 +273,11 @@ async function share(fs){try{await navigator.share({files:fs})}catch(e){}}
 
 // LOCK: stage files
 $('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;days=+b.dataset.d;[...$('chips').children].forEach(c=>c.setAttribute('aria-pressed',c===b))});
-function stage(fs){
+async function stage(fs){
   $('err1').hidden=true;
   const bad=fs.find(f=>isRisky(f.name));
   if(bad){$('err1').textContent='Can’t lock .'+extOf(bad.name)+' files — they can carry malware';$('err1').hidden=false;return}
+  for(const f of fs){if(extOf(f.name)==='zip'){const why=zipBad(new Uint8Array(await f.arrayBuffer()));if(why){$('err1').textContent='Can’t lock '+f.name+' — '+why;$('err1').hidden=false;return}}}
   const total=staged.reduce((a,f)=>a+f.size,0)+fs.reduce((a,f)=>a+f.size,0);
   if(total>MAX){$('err1').textContent='Too big (50 MB max)';$('err1').hidden=false;return}
   staged.push(...fs);renderStaged();
