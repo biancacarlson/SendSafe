@@ -7,93 +7,99 @@
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex,nofollow">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#060812">
+<meta name="theme-color" content="#0a0b0d">
 <title>Send Safe</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237c5cff'/%3E%3Cstop offset='1' stop-color='%2319d3a2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Cpath d='M11 15v-3a5 5 0 0 1 10 0v3' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3Crect x='8' y='15' width='16' height='10' rx='3' fill='white'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e0f12'/%3E%3Cpath d='M11 15v-3a5 5 0 0 1 10 0v3' fill='none' stroke='%23c8ad78' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='8' y='15' width='16' height='10' rx='3' fill='none' stroke='%23c8ad78' stroke-width='2'/%3E%3C/svg%3E">
 <style>
-:root{--bg:#060812;--ink:#f3f5ff;--dim:#8a91b4;--line:rgba(255,255,255,.09);--glass:rgba(255,255,255,.055);--a:#7c5cff;--b:#19d3a2;--bad:#ff6b8a;--r:22px}
+:root{--bg:#0a0b0d;--surface:#111216;--surface2:#17181d;--ink:#ece8df;--dim:#8d8b85;--line:rgba(236,232,223,.09);--line2:rgba(236,232,223,.18);--gold:#c8ad78;--bad:#e07a7a;--serif:ui-serif,"New York","Iowan Old Style",Georgia,"Times New Roman",serif;--mono:ui-monospace,"SF Mono",Menlo,monospace;--ease:cubic-bezier(.3,.7,.2,1)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.4 ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100dvh;display:flex;justify-content:center;padding:max(22px,env(safe-area-inset-top)) 18px max(22px,env(safe-area-inset-bottom));overflow-x:hidden}
-.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.aurora i{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.34;animation:drift 22s ease-in-out infinite alternate}
-.aurora i:nth-child(1){background:var(--a);left:-30vmax;top:-30vmax}
-.aurora i:nth-child(2){background:var(--b);right:-35vmax;bottom:-35vmax;animation-duration:28s;opacity:.26}
-@keyframes drift{to{transform:translate3d(9vmax,6vmax,0) scale(1.12)}}
-main{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:20px;margin:auto 0}
-.hero{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:6px}
-.lockwrap{position:relative;width:96px;height:96px;display:grid;place-items:center}
-.lockwrap::before{content:"";position:absolute;inset:-6px;border-radius:50%;background:conic-gradient(from 0deg,var(--a),var(--b),var(--a));opacity:0;filter:blur(.2px);transition:opacity .4s;-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%)}
-.lockwrap.busy::before{opacity:1;animation:spin 1s linear infinite}
-.lockwrap::after{content:"";position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.35),transparent 70%);filter:blur(10px);z-index:-1;animation:pulse 3.4s ease-in-out infinite}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;display:flex;justify-content:center;padding:max(26px,env(safe-area-inset-top)) 20px max(26px,env(safe-area-inset-bottom));overflow-x:hidden;background:radial-gradient(120% 55% at 50% -8%,rgba(200,173,120,.11),transparent 62%),var(--bg)}
+.grain{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:22px;margin:auto 0}
+.hero{display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:4px}
+.lockwrap{position:relative;width:92px;height:92px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line2);background:radial-gradient(circle at 50% 30%,rgba(236,232,223,.06),transparent 70%)}
+.lockwrap::before{content:"";position:absolute;inset:-1px;border-radius:50%;border:1.5px solid transparent;border-top-color:var(--gold);opacity:0;transition:opacity .4s}
+.lockwrap.busy::before{opacity:1;animation:spin 1.1s linear infinite}
+.lockwrap::after{content:"";position:absolute;inset:-26px;border-radius:50%;background:radial-gradient(circle,rgba(200,173,120,.16),transparent 65%);z-index:-1;animation:breathe 5s ease-in-out infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{50%{transform:scale(1.25);opacity:.6}}
-.lock{width:64px;height:64px;overflow:visible}
-.shackle{transform-box:fill-box;transform-origin:100% 100%;transition:transform .55s cubic-bezier(.3,1.6,.5,1)}
-.lockwrap:not(.shut) .shackle{transform:translateY(-7px) rotate(-18deg)}
-.lockwrap.pop .lock{animation:pop .6s cubic-bezier(.3,1.8,.5,1)}
-@keyframes pop{40%{transform:scale(1.16)}}
-h1{margin:0;font-size:28px;font-weight:750;letter-spacing:-.02em;background:linear-gradient(120deg,#fff 30%,#c9bfff 60%,#9af0d6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:5px;border-radius:999px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-weight:650;padding:11px 0;border-radius:999px;cursor:pointer;transition:color .3s}
-.tabs button[aria-selected=true]{color:#fff}
-.pill{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:999px;background:linear-gradient(120deg,var(--a),#5b8cff 60%,var(--b));box-shadow:0 6px 24px -6px rgba(124,92,255,.7);transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+@keyframes breathe{50%{transform:scale(1.12);opacity:.55}}
+.lock{width:52px;height:52px;overflow:visible}
+.lock .st{stroke:var(--ink);transition:stroke .7s var(--ease)}
+.lockwrap.shut .lock .st{stroke:var(--gold)}
+.shackle{transform-box:fill-box;transform-origin:100% 100%;transition:transform .7s var(--ease)}
+.lockwrap:not(.shut) .shackle{transform:translateY(-5px) rotate(-14deg)}
+.lockwrap.pop .lock{animation:pop .7s var(--ease)}
+@keyframes pop{40%{transform:scale(1.07)}}
+h1{margin:0;font:500 31px/1 var(--serif);letter-spacing:.02em;color:var(--ink)}
+.tabs{position:relative;display:grid;grid-template-columns:1fr 1fr;width:100%;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.tabs button{position:relative;z-index:1;border:0;background:none;color:var(--dim);font:inherit;font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:12px 0;cursor:pointer;transition:color .35s}
+.tabs button[aria-selected=true]{color:var(--bg)}
+.pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:var(--ink);transition:transform .45s var(--ease)}
 .tabs[data-t="1"] .pill{transform:translateX(100%)}
-.card{width:100%;padding:18px;border-radius:var(--r);background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 20px 60px -30px #000;display:flex;flex-direction:column;gap:14px;animation:rise .5s cubic-bezier(.2,.9,.3,1) both}
-@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.98)}}
+.card{width:100%;padding:20px;border-radius:20px;background:var(--surface);border:1px solid var(--line);box-shadow:0 40px 70px -45px #000,inset 0 1px 0 rgba(255,255,255,.035);display:flex;flex-direction:column;gap:16px;animation:rise .55s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
 [hidden]{display:none!important}
-.drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:170px;border-radius:18px;border:1.5px dashed rgba(255,255,255,.2);color:var(--dim);font-weight:600;cursor:pointer;transition:.25s;text-align:center;padding:16px;overflow:hidden}
-.drop:hover,.drop.over{border-color:var(--b);color:#fff;background:rgba(25,211,162,.07);transform:scale(1.01)}
-.drop svg{width:34px;height:34px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:176px;border-radius:14px;border:1px dashed var(--line2);color:var(--dim);font-size:15px;font-weight:500;letter-spacing:.02em;cursor:pointer;transition:border-color .3s,color .3s,background .3s;text-align:center;padding:16px;overflow:hidden}
+.drop:hover,.drop.over{border-color:var(--gold);color:var(--ink);background:rgba(200,173,120,.05)}
+.drop svg{width:30px;height:30px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;font-size:0}
-.drop.has{border-style:solid;border-color:rgba(25,211,162,.5);color:#fff;min-height:96px}
-.drop small{color:var(--dim);font-weight:500;word-break:break-all}
-.btn{appearance:none;border:0;border-radius:16px;padding:15px 18px;font:inherit;font-weight:700;color:#fff;cursor:pointer;transition:transform .2s,box-shadow .3s,opacity .3s;display:flex;align-items:center;justify-content:center;gap:9px}
-.btn:active{transform:scale(.97)}
-.btn.pri{background:linear-gradient(120deg,var(--a),#5b8cff 55%,var(--b));box-shadow:0 10px 30px -10px rgba(124,92,255,.8)}
-.btn.sec{background:rgba(255,255,255,.08);border:1px solid var(--line)}
-.btn[disabled]{opacity:.35;pointer-events:none}
-.btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.drop.has{border-style:solid;border-color:rgba(200,173,120,.45);color:var(--ink);min-height:100px}
+.drop small{color:var(--dim);font-weight:400;word-break:break-all}
+.btn{appearance:none;border:1px solid transparent;border-radius:13px;padding:15px 18px;font:inherit;font-size:15px;font-weight:600;letter-spacing:.02em;color:var(--ink);cursor:pointer;transition:transform .2s,opacity .3s,background .3s,border-color .3s;display:flex;align-items:center;justify-content:center;gap:9px}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--ink);color:var(--bg)}
+.btn.sec{background:transparent;border-color:var(--line2)}
+.btn.sec:hover{border-color:var(--gold)}
+.btn[disabled]{opacity:.3;pointer-events:none}
+.btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-.label button{all:unset;cursor:pointer;color:var(--b);text-transform:none;letter-spacing:0;font-size:14px}
+#saveRow{grid-template-columns:1fr}
+#saveRow:has(#share:not([hidden])){grid-template-columns:1fr 1fr}
+#staged .row{margin-top:6px}
+.label{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
 .key{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.key b{font:700 21px ui-monospace,"SF Mono",Menlo,monospace;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.08);border:1px solid var(--line);letter-spacing:.08em;animation:chip .5s cubic-bezier(.2,.9,.3,1) both}
-@keyframes chip{from{opacity:0;transform:translateY(8px) scale(.9)}}
+.key b{font:600 19px var(--mono);padding:11px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--ink);letter-spacing:.1em;animation:chip .6s var(--ease) both}
+@keyframes chip{from{opacity:0;transform:translateY(5px)}}
 .list{display:flex;flex-direction:column;gap:8px}
-.item{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid var(--line);animation:rise .35s cubic-bezier(.2,.9,.3,1) both}
-.item .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
-.item small{color:var(--dim);white-space:nowrap}
-.ib{all:unset;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);flex:none}
+.item{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--line);animation:rise .4s var(--ease) both}
+.item .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.item small{color:var(--dim);white-space:nowrap;font-size:13px}
+.item.bad{border-color:rgba(224,122,122,.45)}
+.item.bad small{color:var(--bad);font-weight:600}
+.ib{all:unset;cursor:pointer;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line2);flex:none;transition:border-color .3s}
+.ib:hover{border-color:var(--gold)}
 .ib:active{transform:scale(.92)}
-.ib svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.sum{font-size:13.5px;color:var(--dim);text-align:center}
-.sum.warn{color:#ffc46b}
-.note{font-size:13.5px;color:var(--dim);display:flex;gap:8px;align-items:center}
-.note svg{width:16px;height:16px;stroke:var(--b);fill:none;stroke-width:2;flex:none}
-textarea{width:100%;min-height:92px;resize:none;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.28);color:#fff;font:600 15px ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:.06em;padding:14px;outline:none;transition:border-color .25s,box-shadow .25s}
-textarea:focus{border-color:var(--a);box-shadow:0 0 0 4px rgba(124,92,255,.18)}
-textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
-.err{color:var(--bad);font-weight:650;font-size:14.5px;animation:shake .4s}
-@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.done{display:flex;align-items:center;gap:10px;font-weight:700}
-.done .tick{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;animation:pop .6s cubic-bezier(.3,1.8,.5,1)}
-.done .tick svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.foot{font-size:12.5px;color:#5f668c;display:flex;align-items:center;gap:7px;margin-top:2px}
-.foot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--b);box-shadow:0 0 10px var(--b)}
+.ib svg{width:16px;height:16px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sum{font-size:13px;color:var(--dim);text-align:center;letter-spacing:.02em}
+.sum.warn{color:#d9b26a}
+.chips{display:flex;gap:8px}
+.chip{all:unset;flex:1;text-align:center;padding:10px 0;border-radius:10px;border:1px solid var(--line);font-size:14px;font-weight:500;color:var(--dim);cursor:pointer;transition:.3s}
+.chip[aria-pressed=true]{color:var(--ink);border-color:var(--gold);background:rgba(200,173,120,.08)}
+.note{font-size:13px;color:var(--dim);display:flex;gap:9px;align-items:center;letter-spacing:.01em}
+.note svg{width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:1.7;flex:none}
+textarea{width:100%;min-height:92px;resize:none;border-radius:12px;border:1px solid var(--line);background:#0c0d10;color:var(--ink);font:500 15px var(--mono);letter-spacing:.08em;padding:14px;outline:none;transition:border-color .3s,box-shadow .3s}
+textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,173,120,.12)}
+textarea::placeholder{color:#5d5c58;letter-spacing:.02em;font-family:inherit}
+.err{color:var(--bad);font-weight:500;font-size:14px;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.done{display:flex;align-items:center;gap:12px;font:500 21px var(--serif);letter-spacing:.01em}
+.done .tick{width:28px;height:28px;border-radius:50%;border:1px solid var(--gold);background:rgba(200,173,120,.1);display:grid;place-items:center;flex:none;animation:pop .7s var(--ease)}
+.done .tick svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.foot{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#64635f;display:flex;align-items:center;gap:9px}
+.foot::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.8}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div class="aurora"><i></i><i></i></div>
+<div class="grain"></div>
 <main>
   <div class="hero">
     <div class="lockwrap" id="lw">
-      <svg class="lock" viewBox="0 0 64 64" aria-hidden="true">
-        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#19d3a2"/></linearGradient></defs>
-        <path class="shackle" d="M22 28V22a10 10 0 0 1 20 0v6" fill="none" stroke="url(#g)" stroke-width="5" stroke-linecap="round"/>
-        <rect x="12" y="28" width="40" height="28" rx="10" fill="url(#g)"/>
-        <circle cx="32" cy="40" r="3.6" fill="#060812"/><rect x="30.4" y="42" width="3.2" height="7" rx="1.6" fill="#060812"/>
+      <svg class="lock" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path class="shackle st" d="M23 29v-6a9 9 0 0 1 18 0v6" stroke-width="2"/>
+        <rect class="st" x="15" y="29" width="34" height="23" rx="6" stroke-width="2"/>
+        <circle cx="32" cy="39.5" r="2.6" fill="#c8ad78"/><path d="M32 42v5" stroke="#c8ad78" stroke-width="2"/>
       </svg>
     </div>
     <h1>Send Safe</h1>
@@ -115,6 +121,8 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
     <div id="staged" hidden style="display:flex;flex-direction:column;gap:12px">
       <div class="list" id="list1"></div>
       <div class="sum" id="sum1"></div>
+      <div class="label"><span>Expires</span></div>
+      <div class="chips" id="chips"><button class="chip" data-d="1" aria-pressed="false">1 day</button><button class="chip" data-d="7" aria-pressed="true">7 days</button><button class="chip" data-d="30" aria-pressed="false">30 days</button></div>
       <div class="row">
         <label class="btn sec" style="position:relative;cursor:pointer"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add<input type="file" id="f1b" multiple style="position:absolute;inset:0;opacity:0;font-size:0;width:100%;height:100%;cursor:pointer"></label>
         <button class="btn pri" id="lock"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Lock</button>
@@ -123,6 +131,7 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
     <div id="result" hidden>
       <div style="display:flex;flex-direction:column;gap:14px">
         <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Locked</div>
+        <div class="sum" id="meta1" style="margin-top:-8px;white-space:pre-line"></div>
         <div class="row" id="saveRow">
           <button class="btn pri" id="save"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>Save file</button>
           <button class="btn sec" id="share" hidden><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4-4 4M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg>Share</button>
@@ -139,6 +148,7 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
 
   <!-- UNLOCK -->
   <section class="card" id="openView" hidden>
+    <div class="note" id="vnote"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>Only open files from someone you’ve verified.</div>
     <label class="drop" id="drop2">
       <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
       <span id="dropTxt2">Choose .sdoc file</span><small id="dropSub2"></small>
@@ -149,7 +159,9 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
     <button class="btn pri" id="go" disabled><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>Unlock</button>
     <div id="opened" hidden style="display:flex;flex-direction:column;gap:12px">
       <div class="done"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span>Unlocked</div>
+      <div class="sum" id="meta2" style="margin-top:-6px;white-space:pre-line"></div>
       <div class="list" id="list2"></div>
+      <div class="note"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 7.7 8 9 4.8-1.3 8-4.5 8-9V6l-8-3Z"/></svg>After saving, delete the .sdoc and the key.</div>
       <button class="btn pri" id="share2" hidden>Share all</button>
       <button class="btn sec" id="again2">Done</button>
     </div>
@@ -160,17 +172,22 @@ textarea::placeholder{color:#5b6288;letter-spacing:0;font-family:inherit}
 
 <script>
 //CRYPTO-START
-const MAGIC=new TextEncoder().encode('SSAFE2'),ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',MAX=50*1024*1024,WARN=20*1024*1024;
+const MAGIC=new TextEncoder().encode('SSAFE4'),ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',MAX=50*1024*1024,WARN=20*1024*1024;
 function newKey(){const r=crypto.getRandomValues(new Uint8Array(25));let s='';for(const x of r)s+=ALPHA[x&31];return s}
+function dstr(t){return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}
+function fname(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return 'Sent Safe '+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.sdoc'}
 function showKey(s){return s.match(/.{1,5}/g).join('-')}
 function normKey(s){return String(s).toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/[1I]/g,'L')}
 async function aes(k,use){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(k));return crypto.subtle.importKey('raw',h,'AES-GCM',false,[use])}
-function clean(n){return String(n||'file').replace(/[\\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,120)||'file'}
-async function seal(files){
-  const parts=[];let total=4;
+function clean(n){return String(n||'file').replace(/[\u202a-\u202e\u2066-\u2069\u200b-\u200f\ufeff]/g,'').replace(/[\\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,120)||'file'}
+const RISKY=new Set('exe msi bat cmd com scr pif js jse mjs vbs vbe wsf wsh ps1 psm1 sh jar apk app dmg pkg iso img lnk reg dll hta cpl msc deb rpm html htm xhtml svg docm xlsm pptm dotm xltm xlam'.split(' '));
+function extOf(n){const m=/\.([^.]+)$/.exec(String(n).trim());return m?m[1].toLowerCase():''}
+function isRisky(n){return RISKY.has(extOf(clean(n)))}
+async function seal(files,expiry){
+  const parts=[];let total=20;
   for(const f of files){const b=new Uint8Array(await f.arrayBuffer());const m=new TextEncoder().encode(JSON.stringify({n:f.name,t:f.type||''}));parts.push([m,b]);total+=8+m.length+b.length}
   const plain=new Uint8Array(total),dv=new DataView(plain.buffer);let o=0;
-  dv.setUint32(o,parts.length);o+=4;
+  dv.setFloat64(0,expiry||0);dv.setFloat64(8,Date.now());o=16;dv.setUint32(o,parts.length);o+=4;
   for(const[m,b]of parts){dv.setUint32(o,m.length);o+=4;plain.set(m,o);o+=m.length;dv.setUint32(o,b.length);o+=4;plain.set(b,o);o+=b.length}
   const k=newKey(),iv=crypto.getRandomValues(new Uint8Array(12));
   const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'encrypt'),plain));
@@ -186,9 +203,10 @@ async function unseal(file,keyStr){
   const iv=d.slice(MAGIC.length,MAGIC.length+12),ct=d.slice(MAGIC.length+12);
   let plain;try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:MAGIC},await aes(k,'decrypt'),ct))}catch(e){throw new Error('bad')}
   const dv=new DataView(plain.buffer,plain.byteOffset,plain.length),dec=new TextDecoder();
-  let o=0;const n=dv.getUint32(o);o+=4;const out=[];
-  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;out.push({name:clean(meta.n),type:meta.t||'application/octet-stream',bytes:plain.slice(o,o+bl)});o+=bl}
-  return out;
+  const exp=dv.getFloat64(0);if(exp&&Date.now()>exp)throw new Error('expired');
+  const sent=dv.getFloat64(8);let o=16;const n=dv.getUint32(o);o+=4;if(n>1000)throw new Error('bad');const out=[];
+  for(let i=0;i<n;i++){const ml=dv.getUint32(o);o+=4;if(o+ml+4>plain.length)throw new Error('bad');const meta=JSON.parse(dec.decode(plain.slice(o,o+ml)));o+=ml;const bl=dv.getUint32(o);o+=4;if(o+bl>plain.length)throw new Error('bad');const name=clean(meta.n);out.push({name,risky:isRisky(name),type:meta.t||'application/octet-stream',bytes:plain.slice(o,o+bl)});o+=bl}
+  return{files:out,sent,exp};
 }
 //CRYPTO-END
 
@@ -196,7 +214,7 @@ const $=id=>document.getElementById(id);
 const fmt=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const lw=$('lw');
-let staged=[],lockedBlob=null,lockedName='',keyText='',f2file=null,outFiles=[];
+let days=7,staged=[],lockedBlob=null,lockedName='',keyText='',f2file=null,outFiles=[];
 const ICO_X='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',ICO_DL='<svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>';
 
 // tabs
@@ -220,8 +238,11 @@ function canShare(fs){try{return !!(navigator.canShare&&navigator.canShare({file
 async function share(fs){try{await navigator.share({files:fs})}catch(e){}}
 
 // LOCK: stage files
+$('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;days=+b.dataset.d;[...$('chips').children].forEach(c=>c.setAttribute('aria-pressed',c===b))});
 function stage(fs){
   $('err1').hidden=true;
+  const bad=fs.find(f=>isRisky(f.name));
+  if(bad){$('err1').textContent='Can’t lock .'+extOf(bad.name)+' files — they can carry malware';$('err1').hidden=false;return}
   const total=staged.reduce((a,f)=>a+f.size,0)+fs.reduce((a,f)=>a+f.size,0);
   if(total>MAX){$('err1').textContent='Too big (50 MB max)';$('err1').hidden=false;return}
   staged.push(...fs);renderStaged();
@@ -243,9 +264,9 @@ function renderStaged(){
 $('lock').onclick=async()=>{
   if(!staged.length)return;$('err1').hidden=true;lw.classList.add('busy');$('lock').disabled=true;
   try{
-    const[r]=await Promise.all([seal(staged),sleep(900)]);
-    const tag=[...crypto.getRandomValues(new Uint8Array(4))].map(x=>ALPHA[x&31]).join('');
-    lockedName='SendSafe-'+tag+'.sdoc';lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
+    const[r]=await Promise.all([seal(staged,Date.now()+days*864e5),sleep(900)]);
+    const now=Date.now();
+    lockedName=fname(now);$('meta1').textContent=lockedName+'\nExpires '+dstr(now+days*864e5);lockedBlob=blobOf(r.bytes);keyText=showKey(r.key);
     const k=$('key');k.textContent='';
     keyText.split('-').forEach((g,i)=>{const b=document.createElement('b');b.textContent=g;b.style.animationDelay=(i*70)+'ms';k.appendChild(b)});
     lw.classList.remove('busy');lw.classList.add('shut','pop');setTimeout(()=>lw.classList.remove('pop'),700);
@@ -270,20 +291,22 @@ $('go').onclick=async()=>{
   $('err2').hidden=true;lw.classList.add('busy');
   try{
     const[r]=await Promise.all([unseal(f2file,$('k2').value),sleep(700)]);
-    outFiles=r.map(f=>({name:f.name,blob:blobOf(f.bytes,f.type)}));
+    outFiles=r.files.map(f=>({name:f.name,risky:f.risky,blob:blobOf(f.bytes,f.type)}));
+    $('meta2').textContent='Sent safely '+dstr(r.sent)+(r.exp?'\nExpires '+dstr(r.exp):'');
     const L=$('list2');L.textContent='';
     outFiles.forEach(f=>{const row=document.createElement('div');row.className='item';
       const n=document.createElement('span');n.className='n';n.textContent=f.name;
       const sz=document.createElement('small');sz.textContent=fmt(f.blob.size);
-      const b=document.createElement('button');b.className='ib';b.setAttribute('aria-label','Save');b.innerHTML=ICO_DL;b.onclick=()=>save(f.blob,f.name);
-      row.append(n,sz,b);L.appendChild(row)});
+      if(f.risky){row.classList.add('bad');sz.textContent='Blocked';row.append(n,sz)}
+      else{const b=document.createElement('button');b.className='ib';b.setAttribute('aria-label','Save');b.innerHTML=ICO_DL;b.onclick=()=>save(f.blob,f.name);row.append(n,sz,b)}
+      L.appendChild(row)});
     lw.classList.remove('busy','shut');lw.classList.add('pop');setTimeout(()=>lw.classList.remove('pop'),700);
     $('drop2').hidden=true;$('k2').hidden=true;$('go').hidden=true;$('opened').hidden=false;
-    $('share2').hidden=!canShare(outFiles.map(f=>mk(f.blob,f.name)));
+    const safe=outFiles.filter(f=>!f.risky);$('share2').hidden=!safe.length||!canShare(safe.map(f=>mk(f.blob,f.name)));
     $('k2').value='';
-  }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent='Wrong key or damaged file';x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
+  }catch(e){lw.classList.remove('busy');const x=$('err2');x.textContent=e.message==='expired'?'Expired — ask for a new file':'Wrong key or damaged file';x.hidden=false;x.style.animation='none';void x.offsetWidth;x.style.animation=''}
 };
-$('share2').onclick=()=>share(outFiles.map(f=>mk(f.blob,f.name)));
+$('share2').onclick=()=>share(outFiles.filter(f=>!f.risky).map(f=>mk(f.blob,f.name)));
 $('again2').onclick=()=>{outFiles=[];f2file=null;$('list2').textContent='';$('opened').hidden=true;$('drop2').hidden=false;$('k2').hidden=false;$('go').hidden=false;$('drop2').classList.remove('has');$('dropTxt2').textContent='Choose .sdoc file';$('dropSub2').textContent='';$('k2').value='';chk()};
 </script>
 </body>
