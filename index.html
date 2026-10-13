@@ -27,8 +27,9 @@ main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:c
 .lock{width:52px;height:52px;overflow:visible}
 .lock .st{stroke:var(--ink);transition:stroke .7s var(--ease)}
 .lockwrap.shut .lock .st{stroke:var(--gold)}
-.shackle{transform-box:fill-box;transform-origin:0 100%;transition:transform .55s cubic-bezier(.34,1.7,.5,1)}
-.lockwrap:not(.shut) .shackle{transform:rotate(-34deg);transition:transform .6s var(--ease)}
+.shackle{transform-box:fill-box;transform-origin:0 100%}
+.lock .shackle{transition:transform .55s cubic-bezier(.34,1.35,.5,1),stroke .7s var(--ease)}
+.lockwrap:not(.shut) .shackle{transform:rotate(-34deg);transition:transform .6s var(--ease),stroke .7s var(--ease)}
 .lockwrap.pop .lock{animation:pop .7s var(--ease)}
 @keyframes pop{40%{transform:scale(1.07)}}
 h1.sent{color:var(--gold)}
